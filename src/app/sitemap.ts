@@ -1,0 +1,56 @@
+import type { MetadataRoute } from 'next';
+import { supabaseServer } from '@/lib/supabase';
+import { siteUrl } from '@/lib/seo';
+import { CATEGORIES, PREFECTURES } from '@/lib/constants';
+
+export const revalidate = 3600;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const base = siteUrl().replace(/\/$/, '');
+  const now = new Date();
+
+  const staticUrls: MetadataRoute.Sitemap = [
+    '',
+    '/map',
+    '/submit/spot',
+    '/report',
+    '/removal-request',
+    '/terms',
+    '/privacy',
+    '/disclaimer',
+  ].map((p) => ({ url: `${base}${p}`, lastModified: now, changeFrequency: 'weekly', priority: p === '' ? 1 : 0.7 }));
+
+  const prefUrls: MetadataRoute.Sitemap = PREFECTURES.map((p) => ({
+    url: `${base}/area/${p.slug}`,
+    lastModified: now,
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  }));
+
+  const catUrls: MetadataRoute.Sitemap = CATEGORIES.map((c) => ({
+    url: `${base}/category/${c.slug}`,
+    lastModified: now,
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  }));
+
+  let spotUrls: MetadataRoute.Sitemap = [];
+  try {
+    const supabase = supabaseServer();
+    const { data } = await supabase
+      .from('spots')
+      .select('slug, updated_at')
+      .eq('status', 'published')
+      .limit(5000);
+    spotUrls = (data ?? []).map((s) => ({
+      url: `${base}/spots/${s.slug}`,
+      lastModified: new Date(s.updated_at),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    }));
+  } catch {
+    // Supabase未設定時はスキップ
+  }
+
+  return [...staticUrls, ...prefUrls, ...catUrls, ...spotUrls];
+}

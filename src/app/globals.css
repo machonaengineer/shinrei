@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  background: #0a0a0f;
+  color: #e7e7ee;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Leaflet base styles (inlined minimal: full styles loaded via CDN in layout) */
+.leaflet-container {
+  background: #161823 !important;
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: #161823 !important;
+  color: #e7e7ee !important;
+  border: 1px solid #23253a !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.leaflet-control-attribution {
+  background: rgba(10, 10, 15, 0.7) !important;
+  color: #a0a0b5 !important;
+}
+
+.leaflet-control-attribution a {
+  color: #c8a4ff !important;
+}
+
+/* Common surfaces */
+.surface-card {
+  @apply bg-bg-card border border-bg-border rounded-xl;
+}
+
+.surface-soft {
+  @apply bg-bg-soft border border-bg-border rounded-xl;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium transition-colors;
+}
+
+.btn-primary {
+  @apply btn bg-accent text-white hover:bg-accent-soft;
+}
+
+.btn-secondary {
+  @apply btn bg-bg-card border border-bg-border text-ink hover:border-accent;
+}
+
+.btn-danger {
+  @apply btn bg-accent-red text-white hover:opacity-90;
+}
+
+.input {
+  @apply w-full bg-bg-soft border border-bg-border rounded-md px-3 py-2 text-ink placeholder:text-ink-muted focus:outline-none focus:border-accent;
+}
+
+.label {
+  @apply block text-sm font-medium text-ink-dim mb-1;
+}
+
+.required-mark {
+  @apply text-accent-red ml-1;
+}
+
+.kbd {
+  @apply px-1.5 py-0.5 bg-bg-soft rounded border border-bg-border text-xs text-ink-dim;
+}
