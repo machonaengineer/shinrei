@@ -4,6 +4,60 @@
 
 > ⚠ 本サービスはユーザー投稿に基づく**心霊・怪談・都市伝説の口コミマップ**であり、事件・事故・死亡事実等を断定する目的ではありません。
 
+## 🚀 すぐに公開する（Go Live）
+
+最短経路で本番公開する手順です。所要 10〜15 分。
+
+### ステップ1：Supabase プロジェクトを作成
+
+1. https://supabase.com にサインアップ → **New Project**
+2. プロジェクト名・パスワード・リージョン（例: Tokyo）を入力して作成
+3. プロジェクト立ち上げ後、左メニュー **SQL Editor** を開く
+4. `supabase/schema.sql` の内容を貼り付けて **Run**
+5. 同様に `supabase/policies.sql` を **Run**
+6. （任意・開発確認用）`supabase/seed.sql` を **Run**
+7. **Project Settings → API** から以下をメモ
+   - `Project URL`
+   - `anon public` キー
+   - `service_role` キー（**サーバー限定**）
+
+### ステップ2：Vercel にデプロイ
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmachonaengineer%2Fshinrei&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,NEXT_PUBLIC_SITE_URL,ADMIN_EMAIL,IP_HASH_SALT&envDescription=Supabase%20%E3%81%A8%E3%82%B5%E3%82%A4%E3%83%88%E3%81%AE%E8%A8%AD%E5%AE%9A&envLink=https%3A%2F%2Fgithub.com%2Fmachonaengineer%2Fshinrei%23%E3%82%B9%E3%83%86%E3%83%83%E3%83%972vercel-%E3%81%AB%E3%83%87%E3%83%97%E3%83%AD%E3%82%A4)
+
+または手動で：
+
+1. https://vercel.com にサインアップ → **Add New → Project**
+2. このリポジトリを Import
+3. **Production Branch** を `claude/haunted-spots-map-app-bFlGP`（または main にマージ後 `main`）に設定
+4. **Environment Variables** に下記を設定（後述の `.env.example` 参照）
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY` ← **Sensitive** にチェック
+   - `NEXT_PUBLIC_SITE_URL`（例: `https://your-app.vercel.app`）
+   - `ADMIN_EMAIL`
+   - `IP_HASH_SALT`（任意のランダム文字列）
+5. **Deploy**
+
+### ステップ3：管理者アカウントを作成
+
+1. Supabase **Authentication → Users → Add user** で `ADMIN_EMAIL` のユーザーを作成
+2. SQL Editor で以下を実行（手動昇格）：
+   ```sql
+   update public.profiles set role = 'admin' where id = '<UserのUID>';
+   ```
+3. デプロイ済みサイトの `/login` から ログイン → `/admin` にアクセス可能
+
+### ステップ4：Supabase 認証の URL 設定（推奨）
+
+1. Supabase **Authentication → URL Configuration**
+2. **Site URL** に Vercel の本番URLを設定
+3. **Redirect URLs** に `https://your-app.vercel.app/**` を追加
+
+これで公開完了です。`/submit/spot` から投稿 → `/admin/spots` で承認 → `/map` に反映の流れを確認してください。
+
+---
+
 ---
 
 ## 1. サービス概要
