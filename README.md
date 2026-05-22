@@ -13,10 +13,8 @@
 1. https://supabase.com にサインアップ → **New Project**
 2. プロジェクト名・パスワード・リージョン（例: Tokyo）を入力して作成
 3. プロジェクト立ち上げ後、左メニュー **SQL Editor** を開く
-4. `supabase/schema.sql` の内容を貼り付けて **Run**
-5. 同様に `supabase/policies.sql` を **Run**
-6. （任意・開発確認用）`supabase/seed.sql` を **Run**
-7. **Project Settings → API** から以下をメモ
+4. **[`supabase/setup.sql`](./supabase/setup.sql) の内容を全部コピーして貼り付け → Run**（schema + policies + seed を一括適用。所要 5 秒）
+5. **Project Settings → API** から以下をメモ
    - `Project URL`
    - `anon public` キー
    - `service_role` キー（**サーバー限定**）
