@@ -35,7 +35,7 @@ export default async function AreaPage({ params }: { params: Params }) {
   const supabase = supabaseServer();
   const { data } = await supabase
     .from('spots')
-    .select('id, slug, name, lat, lng, category, category_slug, prefecture, prefecture_slug, city, description, scary_score, review_count, is_entry_prohibited, is_private_property')
+    .select('id, slug, name, lat, lng, category, category_slug, country, country_slug, prefecture, prefecture_slug, city, description, scary_score, review_count, is_entry_prohibited, is_private_property')
     .eq('status', 'published')
     .eq('prefecture_slug', pref.slug)
     .order('scary_score', { ascending: false })
@@ -51,6 +51,8 @@ export default async function AreaPage({ params }: { params: Params }) {
     lng: s.lng,
     category: s.category,
     category_slug: s.category_slug,
+    country: s.country,
+    country_slug: s.country_slug,
     prefecture: s.prefecture,
     prefecture_slug: s.prefecture_slug,
     scary_score: s.scary_score,

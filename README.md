@@ -13,7 +13,7 @@
 1. https://supabase.com にサインアップ → **New Project**
 2. プロジェクト名・パスワード・リージョン（例: Tokyo）を入力して作成
 3. プロジェクト立ち上げ後、左メニュー **SQL Editor** を開く
-4. **[`supabase/setup.sql`](./supabase/setup.sql) の内容を全部コピーして貼り付け → Run**（schema + policies + seed を一括適用。所要 5 秒）
+4. **[`supabase/setup.sql`](./supabase/setup.sql) の内容を全部コピーして貼り付け → Run**（schema + migration + policies + 日本&海外シードを一括適用。所要 5 秒。**50件以上の著名スポット**が投入されます）
 5. **Project Settings → API** から以下をメモ
    - `Project URL`
    - `anon public` キー
@@ -231,6 +231,52 @@ http://localhost:3000 を開きます。
 - `robots.txt`（`/robots.ts`、`/admin` `/login` `/report` `/removal-request` は disallow）
 - スポット詳細に `Place` 構造化データ（aggregateRating含む）
 - URL は slug ベース
+
+## 11.4 既存DBへの追加マイグレーション
+
+既に setup.sql を流し済みで、後から海外対応・動画機能を追加する場合：
+
+1. Supabase SQL Editor で `supabase/migrations/0001_world_videos_images.sql` を実行
+2. （オプション）海外シードを追加：`supabase/seed_world.sql` を実行
+3. （オプション）Storage バケットを作成：Supabase ダッシュボード → Storage → New bucket
+   - Name: `spot-photos`
+   - **Public bucket**: ON
+
+写真投稿機能を使うには `spot-photos` バケットの作成が必須です。
+
+## 11.5 初期データ投入スクリプト
+
+`scripts/import-spots.ts` で「事実情報のみ（スポット名・地域・カテゴリ・緯度経度・関連動画URL）」を収集し、`pending_review` で投入する仕組みがあります。
+
+### ポリシー（厳守）
+- **本文・口コミ・写真は他サイトから取り込みません**
+- 公開用 `description` は **独自テンプレート** で生成（断定表現は使用しない）
+- 出典URLは `sources` テーブルに **内部管理として保存**（`is_public = false`）、公開画面には表示しません
+- robots.txt を毎リクエスト前に確認、Wikipedia API は 1 req/sec で polite に
+- スクレイピング許諾が不明確なサイトは **明示的にスキップ**
+
+### 実装済アダプタ
+- **Wikipedia (ja)**：心霊スポット一覧記事のリンクから事実情報（タイトル、座標）のみ抽出
+- その他 10 サイトは `manualSkipAdapter` でスキップ（理由はログ出力）
+
+### 使い方
+
+```bash
+# 必ず DRY_RUN=true で先に確認
+DRY_RUN=true npm run import:spots
+
+# 結果に問題なければ本番投入（pending_review として保存）
+# .env.local に NEXT_PUBLIC_SUPABASE_URL と SUPABASE_SERVICE_ROLE_KEY を設定
+DRY_RUN=false IMPORT_LIMIT_PER_SOURCE=30 npm run import:spots
+
+# その後 /admin/spots で承認
+```
+
+### 追加サイトに対応する場合
+1. そのサイトの **robots.txt / 利用規約** で自動収集が許容されているか確認
+2. 取得は **事実情報のみ**（本文・写真コピー禁止）
+3. `scripts/import-spots.ts` の `adapters` 配列に新しい `SourceAdapter` を追加
+4. **必ず最初は DRY_RUN で動作確認**
 
 ## 12. 今後の拡張案
 

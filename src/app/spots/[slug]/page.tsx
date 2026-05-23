@@ -8,8 +8,11 @@ import { CategoryBadge } from '@/components/CategoryBadge';
 import { ScaryScore } from '@/components/ScaryScore';
 import { DisclaimerBox } from '@/components/DisclaimerBox';
 import { WarningBox } from '@/components/WarningBox';
+import { PhotoGallery } from '@/components/PhotoGallery';
+import { VideoEmbed, VideoSearchLinks } from '@/components/VideoEmbed';
+import { VideoSubmitForm } from '@/components/VideoSubmitForm';
 import { buildMetadata, siteUrl } from '@/lib/seo';
-import { SITE_NAME } from '@/lib/constants';
+import { SITE_NAME, COUNTRY_BY_SLUG } from '@/lib/constants';
 import type { SpotPin } from '@/types/spot';
 
 export const revalidate = 60;
@@ -20,15 +23,16 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const supabase = supabaseServer();
   const { data } = await supabase
     .from('spots')
-    .select('name, description, prefecture, category, slug, status')
+    .select('name, description, country, prefecture, category, slug, status')
     .eq('slug', params.slug)
     .single();
 
   if (!data || data.status !== 'published') {
     return buildMetadata({ title: 'スポットが見つかりません', path: `/spots/${params.slug}`, noindex: true });
   }
+  const where = data.country && data.country !== '日本' ? `${data.country} ${data.prefecture}` : data.prefecture;
   const title = `${data.name}の口コミ・心霊体験談`;
-  const description = `${data.prefecture}の心霊スポット「${data.name}」（カテゴリ:${data.category}）の口コミ、怪談、都市伝説。掲載内容はユーザー投稿に基づく体験談であり、真偽を保証するものではありません。`;
+  const description = `${where}の心霊スポット「${data.name}」（カテゴリ:${data.category}）の口コミ、怪談、都市伝説。掲載内容はユーザー投稿に基づく体験談であり、真偽を保証するものではありません。`;
   return buildMetadata({
     title,
     description,
@@ -48,15 +52,33 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
 
   if (!spot) notFound();
 
-  const { data: reviewsData } = await supabase
-    .from('reviews')
-    .select('*')
-    .eq('spot_id', spot.id)
-    .eq('status', 'published')
-    .order('created_at', { ascending: false })
-    .limit(50);
+  const [{ data: reviewsData }, { data: imagesData }, { data: videosData }] = await Promise.all([
+    supabase
+      .from('reviews')
+      .select('*')
+      .eq('spot_id', spot.id)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(50),
+    supabase
+      .from('spot_images')
+      .select('*')
+      .eq('spot_id', spot.id)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(24),
+    supabase
+      .from('spot_videos')
+      .select('*')
+      .eq('spot_id', spot.id)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(6),
+  ]);
 
   const reviews = reviewsData ?? [];
+  const images = imagesData ?? [];
+  const videos = videosData ?? [];
 
   const pin: SpotPin = {
     id: spot.id,
@@ -66,6 +88,8 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
     lng: spot.lng,
     category: spot.category,
     category_slug: spot.category_slug,
+    country: spot.country,
+    country_slug: spot.country_slug,
     prefecture: spot.prefecture,
     prefecture_slug: spot.prefecture_slug,
     scary_score: spot.scary_score,
@@ -73,6 +97,9 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
     is_entry_prohibited: spot.is_entry_prohibited,
     is_private_property: spot.is_private_property,
   };
+
+  const isForeign = spot.country_slug && spot.country_slug !== 'japan';
+  const countryEmoji = COUNTRY_BY_SLUG[spot.country_slug]?.emoji ?? '🌐';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -83,7 +110,7 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
       '@type': 'PostalAddress',
       addressRegion: spot.prefecture,
       addressLocality: spot.city ?? undefined,
-      addressCountry: 'JP',
+      addressCountry: spot.country_slug === 'japan' ? 'JP' : spot.country,
     },
     geo: {
       '@type': 'GeoCoordinates',
@@ -112,7 +139,15 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
       <nav className="text-xs text-ink-muted">
         <Link href="/" className="hover:text-ink">ホーム</Link>
         <span className="mx-1">/</span>
-        <Link href={`/area/${spot.prefecture_slug}`} className="hover:text-ink">{spot.prefecture}</Link>
+        {isForeign ? (
+          <>
+            <Link href={`/country/${spot.country_slug}`} className="hover:text-ink">{spot.country}</Link>
+            <span className="mx-1">/</span>
+            <span className="text-ink-dim">{spot.prefecture}</span>
+          </>
+        ) : (
+          <Link href={`/area/${spot.prefecture_slug}`} className="hover:text-ink">{spot.prefecture}</Link>
+        )}
         <span className="mx-1">/</span>
         <Link href={`/category/${spot.category_slug}`} className="hover:text-ink">{spot.category}</Link>
         <span className="mx-1">/</span>
@@ -120,8 +155,13 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
       </nav>
 
       <header className="space-y-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <CategoryBadge slug={spot.category_slug} />
+          {isForeign && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-xs text-ink">
+              {countryEmoji} {spot.country}
+            </span>
+          )}
           <span className="text-xs text-ink-muted">{spot.prefecture}{spot.city ? ` / ${spot.city}` : ''}</span>
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-ink">{spot.name}</h1>
@@ -132,6 +172,7 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
         </div>
       </header>
 
+      {/* 1. 地図 */}
       <MapViewDynamic
         spots={[pin]}
         height="40vh"
@@ -140,6 +181,7 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
         singleSpotName={spot.name}
       />
 
+      {/* 2. 概要 */}
       <section className="space-y-2">
         <h2 className="text-lg font-semibold text-ink">概要</h2>
         {spot.address_public && (
@@ -148,12 +190,41 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
         <p className="text-ink-dim whitespace-pre-wrap leading-relaxed">{spot.description}</p>
       </section>
 
-      <WarningBox>
-        私有地、立入禁止区域、危険区域への侵入は絶対に行わないでください。本サイトは現地訪問や探索を推奨するものではありません。
-        {spot.is_entry_prohibited && <strong className="block mt-1 text-accent-gold">このスポットは立入禁止区域とされています。</strong>}
-        {spot.is_private_property && <strong className="block mt-1 text-accent-gold">このスポットは私有地とされています。</strong>}
-      </WarningBox>
+      {/* 3. 現地写真・投稿写真 */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-ink">現地写真・投稿写真</h2>
+          <Link href={`/spots/${spot.slug}/photo`} className="btn-secondary text-sm">写真を投稿</Link>
+        </div>
+        <PhotoGallery images={images} spotSlug={spot.slug} />
+      </section>
 
+      {/* 4. 現地動画・関連動画 */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-ink">現地動画・関連動画</h2>
+        </div>
+        {videos.length > 0 ? (
+          <div className="grid gap-3 md:grid-cols-2">
+            {videos.map((v) => (
+              <VideoEmbed key={v.id} video={v} />
+            ))}
+          </div>
+        ) : (
+          <div className="surface-card p-4 text-center text-sm text-ink-dim">
+            まだ承認済みの関連動画はありません。
+          </div>
+        )}
+        <VideoSearchLinks spotName={spot.name} />
+        <details className="surface-soft p-3 text-sm">
+          <summary className="cursor-pointer text-ink-dim">関連動画URLを投稿する</summary>
+          <div className="mt-3">
+            <VideoSubmitForm spotSlug={spot.slug} />
+          </div>
+        </details>
+      </section>
+
+      {/* 5. 口コミ */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-ink">投稿された口コミ</h2>
@@ -170,8 +241,16 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
         )}
       </section>
 
+      {/* 6. 注意喚起 */}
+      <WarningBox>
+        私有地、立入禁止区域、危険区域への侵入は絶対に行わないでください。本サイトは現地訪問や探索を推奨するものではありません。
+        {spot.is_entry_prohibited && <strong className="block mt-1 text-accent-gold">このスポットは立入禁止区域とされています。</strong>}
+        {spot.is_private_property && <strong className="block mt-1 text-accent-gold">このスポットは私有地とされています。</strong>}
+      </WarningBox>
+
       <DisclaimerBox />
 
+      {/* 7. 通報・削除依頼 */}
       <div className="flex flex-wrap gap-3 text-sm">
         <Link href={`/report?targetType=spot&targetId=${spot.id}`} className="btn-secondary">
           この投稿を通報する

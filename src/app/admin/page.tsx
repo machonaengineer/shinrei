@@ -8,9 +8,11 @@ export const dynamic = 'force-dynamic';
 export default async function AdminHome() {
   const admin = supabaseAdmin();
 
-  const [pendingSpots, pendingReviews, openReports, openRemovals, latestSpots] = await Promise.all([
+  const [pendingSpots, pendingReviews, pendingPhotos, pendingVideos, openReports, openRemovals, latestSpots] = await Promise.all([
     admin.from('spots').select('id', { count: 'exact', head: true }).eq('status', 'pending_review'),
     admin.from('reviews').select('id', { count: 'exact', head: true }).eq('status', 'pending_review'),
+    admin.from('spot_images').select('id', { count: 'exact', head: true }).eq('status', 'pending_review'),
+    admin.from('spot_videos').select('id', { count: 'exact', head: true }).eq('status', 'pending_review'),
     admin.from('reports').select('id', { count: 'exact', head: true }).eq('status', 'open'),
     admin.from('removal_requests').select('id', { count: 'exact', head: true }).eq('status', 'open'),
     admin
@@ -23,6 +25,8 @@ export default async function AdminHome() {
   const stats = [
     { label: '承認待ちスポット', value: pendingSpots.count ?? 0, href: '/admin/spots?status=pending_review' },
     { label: '承認待ち口コミ', value: pendingReviews.count ?? 0, href: '/admin/reviews?status=pending_review' },
+    { label: '承認待ち写真', value: pendingPhotos.count ?? 0, href: '/admin/photos?status=pending_review' },
+    { label: '承認待ち動画', value: pendingVideos.count ?? 0, href: '/admin/videos?status=pending_review' },
     { label: '未対応通報', value: openReports.count ?? 0, href: '/admin/reports?status=open' },
     { label: '未対応削除依頼', value: openRemovals.count ?? 0, href: '/admin/removal-requests?status=open' },
   ];

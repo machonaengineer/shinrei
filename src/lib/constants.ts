@@ -122,6 +122,39 @@ export const PREFECTURE_BY_SLUG = Object.fromEntries(
 
 export const REGIONS = Array.from(new Set(PREFECTURES.map((p) => p.region)));
 
+export type CountryDef = {
+  slug: string;
+  name: string;
+  emoji: string;
+};
+
+export const COUNTRIES: CountryDef[] = [
+  { slug: 'japan', name: '日本', emoji: '🇯🇵' },
+  { slug: 'usa', name: 'アメリカ合衆国', emoji: '🇺🇸' },
+  { slug: 'uk', name: 'イギリス', emoji: '🇬🇧' },
+  { slug: 'ireland', name: 'アイルランド', emoji: '🇮🇪' },
+  { slug: 'romania', name: 'ルーマニア', emoji: '🇷🇴' },
+  { slug: 'italy', name: 'イタリア', emoji: '🇮🇹' },
+  { slug: 'france', name: 'フランス', emoji: '🇫🇷' },
+  { slug: 'germany', name: 'ドイツ', emoji: '🇩🇪' },
+  { slug: 'czech', name: 'チェコ', emoji: '🇨🇿' },
+  { slug: 'mexico', name: 'メキシコ', emoji: '🇲🇽' },
+  { slug: 'india', name: 'インド', emoji: '🇮🇳' },
+  { slug: 'thailand', name: 'タイ', emoji: '🇹🇭' },
+  { slug: 'taiwan', name: '台湾', emoji: '🇹🇼' },
+  { slug: 'korea', name: '韓国', emoji: '🇰🇷' },
+  { slug: 'china', name: '中国', emoji: '🇨🇳' },
+  { slug: 'philippines', name: 'フィリピン', emoji: '🇵🇭' },
+  { slug: 'indonesia', name: 'インドネシア', emoji: '🇮🇩' },
+  { slug: 'australia', name: 'オーストラリア', emoji: '🇦🇺' },
+  { slug: 'canada', name: 'カナダ', emoji: '🇨🇦' },
+  { slug: 'other', name: 'その他', emoji: '🌐' },
+];
+
+export const COUNTRY_BY_SLUG = Object.fromEntries(
+  COUNTRIES.map((c) => [c.slug, c]),
+) as Record<string, CountryDef>;
+
 export const REPORT_REASONS = [
   '個人情報が含まれている',
   '事実と異なる',

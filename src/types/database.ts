@@ -39,6 +39,8 @@ type SpotRow = {
   name: string;
   slug: string;
   description: string | null;
+  country: string;
+  country_slug: string;
   prefecture: string;
   prefecture_slug: string;
   city: string | null;
@@ -55,6 +57,23 @@ type SpotRow = {
   is_entry_prohibited: boolean;
   status: SpotStatus;
   created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type VideoPlatform = 'youtube' | 'tiktok' | 'other';
+
+type SpotVideoRow = {
+  id: string;
+  spot_id: string;
+  platform: VideoPlatform;
+  video_url: string;
+  embed_url: string | null;
+  title: string | null;
+  status: ReviewStatus;
+  source_type: string | null;
+  submitted_by_name: string | null;
+  moderation_note: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -103,7 +122,15 @@ type SpotImageRow = {
   review_id: string | null;
   image_url: string;
   status: ReviewStatus;
+  caption: string | null;
+  uploaded_by_name: string | null;
+  source_type: string | null;
+  moderation_note: string | null;
+  is_ai_generated: boolean;
+  is_sensitive: boolean;
+  report_count: number;
   created_at: string;
+  updated_at: string;
 };
 
 type SourceRow = {
@@ -112,6 +139,10 @@ type SourceRow = {
   source_type: string | null;
   source_url: string | null;
   memo: string | null;
+  source_name: string | null;
+  raw_title: string | null;
+  retrieved_at: string | null;
+  is_public: boolean;
   created_at: string;
 };
 
@@ -136,6 +167,8 @@ export interface Database {
           name: string;
           slug: string;
           description?: string | null;
+          country?: string;
+          country_slug?: string;
           prefecture: string;
           prefecture_slug: string;
           city?: string | null;
@@ -155,6 +188,30 @@ export interface Database {
         };
         Update: Partial<SpotRow>;
         Relationships: [];
+      };
+      spot_videos: {
+        Row: SpotVideoRow;
+        Insert: {
+          id?: string;
+          spot_id: string;
+          platform: VideoPlatform;
+          video_url: string;
+          embed_url?: string | null;
+          title?: string | null;
+          status?: ReviewStatus;
+          source_type?: string | null;
+          submitted_by_name?: string | null;
+          moderation_note?: string | null;
+        };
+        Update: Partial<SpotVideoRow>;
+        Relationships: [
+          {
+            foreignKeyName: 'spot_videos_spot_id_fkey';
+            columns: ['spot_id'];
+            referencedRelation: 'spots';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       reviews: {
         Row: ReviewRow;
@@ -215,6 +272,13 @@ export interface Database {
           review_id?: string | null;
           image_url: string;
           status?: ReviewStatus;
+          caption?: string | null;
+          uploaded_by_name?: string | null;
+          source_type?: string | null;
+          moderation_note?: string | null;
+          is_ai_generated?: boolean;
+          is_sensitive?: boolean;
+          report_count?: number;
         };
         Update: Partial<SpotImageRow>;
         Relationships: [];
@@ -227,6 +291,10 @@ export interface Database {
           source_type?: string | null;
           source_url?: string | null;
           memo?: string | null;
+          source_name?: string | null;
+          raw_title?: string | null;
+          retrieved_at?: string | null;
+          is_public?: boolean;
         };
         Update: Partial<SourceRow>;
         Relationships: [];

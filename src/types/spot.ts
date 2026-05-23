@@ -12,6 +12,8 @@ export type SpotPin = Pick<
   | 'lng'
   | 'category'
   | 'category_slug'
+  | 'country'
+  | 'country_slug'
   | 'prefecture'
   | 'prefecture_slug'
   | 'scary_score'
@@ -19,3 +21,5 @@ export type SpotPin = Pick<
   | 'is_entry_prohibited'
   | 'is_private_property'
 >;
+
+export type SpotVideo = import('./database').Database['public']['Tables']['spot_videos']['Row'];
