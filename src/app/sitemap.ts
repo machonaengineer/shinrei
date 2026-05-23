@@ -15,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '',
     '/map',
     '/world',
+    '/ranking',
     '/yokai',
     '/articles',
     '/about',
