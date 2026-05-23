@@ -28,6 +28,14 @@ export default function PrivacyPage() {
         <li>削除依頼、通報への対応</li>
       </ul>
 
+      <h2 className="text-ink mt-6 font-semibold">アクセス解析ツールについて</h2>
+      <p>本サービスは、サービスの利用状況を把握するため、Google Analytics 4 および Vercel Analytics を使用しています。これらのツールはトラフィックデータを Cookie または同等の技術により収集します。収集される情報は IP アドレスを匿名化した状態で扱われ、個人を特定する目的では使用されません。</p>
+      <p>Google Analytics の詳細は <a className="text-accent hover:underline" href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Google のパートナーサイトでのデータ使用</a> をご参照ください。Google Analytics を無効化したい場合は、<a className="text-accent hover:underline" href="https://tools.google.com/dlpage/gaoptout?hl=ja" target="_blank" rel="noopener noreferrer">Google Analytics オプトアウトアドオン</a> をご利用ください。</p>
+
+      <h2 className="text-ink mt-6 font-semibold">第三者配信の広告サービスについて</h2>
+      <p>本サービスは、第三者配信の広告サービス（Google AdSense 等）を利用することがあります。広告配信事業者は、ユーザーの興味に応じた広告を表示するため、当サイトや他サイトへのアクセスに関する情報「Cookie」（氏名・住所・メール・電話番号は含まれません）を使用することがあります。</p>
+      <p>Google による広告 Cookie の使用については <a className="text-accent hover:underline" href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer">広告ポリシー</a> をご参照ください。広告 Cookie を無効化したい場合は、<a className="text-accent hover:underline" href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">広告設定</a> から設定できます。</p>
+
       <h2 className="text-ink mt-6 font-semibold">第三者提供</h2>
       <p>法令に基づく場合を除き、ユーザーの同意なく個人情報を第三者に提供することはありません。</p>
 

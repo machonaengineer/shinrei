@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { SiteAnalytics } from '@/components/Analytics';
 import { SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants';
 import { siteUrl } from '@/lib/seo';
 
@@ -21,6 +22,12 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
   },
   robots: { index: true, follow: true },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { 'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : undefined,
+  },
 };
 
 export const viewport: Viewport = {
@@ -46,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <SiteAnalytics />
       </body>
     </html>
   );

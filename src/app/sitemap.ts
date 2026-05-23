@@ -3,6 +3,7 @@ import { supabaseServer } from '@/lib/supabase';
 import { siteUrl } from '@/lib/seo';
 import { CATEGORIES, COUNTRIES, PREFECTURES } from '@/lib/constants';
 import { ARTICLES } from '@/content/articles';
+import { YOKAI_LIST } from '@/content/yokai';
 
 export const revalidate = 3600;
 
@@ -14,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '',
     '/map',
     '/world',
+    '/yokai',
     '/articles',
     '/about',
     '/editorial-policy',
@@ -24,6 +26,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/privacy',
     '/disclaimer',
   ].map((p) => ({ url: `${base}${p}`, lastModified: now, changeFrequency: 'weekly', priority: p === '' ? 1 : 0.7 }));
+
+  const yokaiUrls: MetadataRoute.Sitemap = YOKAI_LIST.map((y) => ({
+    url: `${base}/yokai/${y.slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly',
+    priority: 0.6,
+  }));
 
   const articleUrls: MetadataRoute.Sitemap = ARTICLES.map((a) => ({
     url: `${base}/articles/${a.slug}`,
@@ -71,5 +80,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Supabase未設定時はスキップ
   }
 
-  return [...staticUrls, ...articleUrls, ...countryUrls, ...prefUrls, ...catUrls, ...spotUrls];
+  return [...staticUrls, ...yokaiUrls, ...articleUrls, ...countryUrls, ...prefUrls, ...catUrls, ...spotUrls];
 }
