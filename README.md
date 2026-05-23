@@ -13,8 +13,11 @@
 1. https://supabase.com にサインアップ → **New Project**
 2. プロジェクト名・パスワード・リージョン（例: Tokyo）を入力して作成
 3. プロジェクト立ち上げ後、左メニュー **SQL Editor** を開く
-4. **[`supabase/setup.sql`](./supabase/setup.sql) の内容を全部コピーして貼り付け → Run**（schema + migration + policies + 日本&海外シードを一括適用。所要 5 秒。**50件以上の著名スポット**が投入されます）
-5. **Project Settings → API** から以下をメモ
+4. **[`supabase/setup.sql`](./supabase/setup.sql) の内容を全部コピーして貼り付け → Run**（schema + migration + policies + 日本&海外シードを一括適用。所要 5 秒。**100件以上の著名スポット**が投入されます）
+5. **より多くのスポットを入れたい場合**: 続けて以下のファイルを順次 SQL Editor で Run（各ファイルは冪等で、何度実行しても重複しません）：
+   - `supabase/imported_part1.sql` 〜 `imported_part6.sql`（存在するものすべて）
+   - 各 +300件程度のスポットが追加されます。全部適用すると **2000件超** に達します
+6. **Project Settings → API** から以下をメモ
    - `Project URL`
    - `anon public` キー
    - `service_role` キー（**サーバー限定**）
