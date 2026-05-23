@@ -14,10 +14,11 @@
 2. プロジェクト名・パスワード・リージョン（例: Tokyo）を入力して作成
 3. プロジェクト立ち上げ後、左メニュー **SQL Editor** を開く
 4. **[`supabase/setup.sql`](./supabase/setup.sql) の内容を全部コピーして貼り付け → Run**（schema + migration + policies + 日本&海外シードを一括適用。所要 5 秒。**100件以上の著名スポット**が投入されます）
-5. **大量のスポット（数千件）を入れる場合**: 続けて以下のファイルを順次 SQL Editor で Run（各ファイルは冪等で、何度実行しても重複しません）：
-   - `supabase/imported_part1.sql` 〜 `imported_part15.sql`（存在するものすべて。各 300〜450 件）
-   - 1ファイルずつ貼り付け → Run の繰り返し。全部適用すると **3000〜5000 件** に達します
-   - 投入されたスポットは `pending_review` 状態。`/admin/spots` で承認すると公開されます
+5. **大量のスポット（5500+ 件）を入れる場合**: 続けて以下のファイルを順次 SQL Editor で Run（各ファイルは冪等で、何度実行しても重複しません）：
+   - `supabase/imported_part1.sql` 〜 `imported_part15.sql`（15ファイル、各 270〜436 件）
+   - 1ファイルずつ貼り付け → Run の繰り返し。全部適用すると **約 5574 件** に達します
+   - 投入されたスポットは `pending_review` 状態。`/admin/spots` で確認し、問題ないものは「承認」ボタンで公開されます
+   - スクレイプ元は ghostmap.jp の事実情報（名称・緯度経度のみ）。本文は独自テンプレで生成、出典URLは内部 `sources` テーブル保存で公開画面には出ません
 6. **Project Settings → API** から以下をメモ
    - `Project URL`
    - `anon public` キー
