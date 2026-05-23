@@ -133,6 +133,18 @@ type SpotImageRow = {
   updated_at: string;
 };
 
+type ContactMessageRow = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  subject: string | null;
+  body: string;
+  source: string | null;
+  status: ReportStatus;
+  created_at: string;
+  updated_at: string;
+};
+
 type SourceRow = {
   id: string;
   spot_id: string | null;
@@ -281,6 +293,20 @@ export interface Database {
           report_count?: number;
         };
         Update: Partial<SpotImageRow>;
+        Relationships: [];
+      };
+      contact_messages: {
+        Row: ContactMessageRow;
+        Insert: {
+          id?: string;
+          name?: string | null;
+          email?: string | null;
+          subject?: string | null;
+          body: string;
+          source?: string | null;
+          status?: ReportStatus;
+        };
+        Update: Partial<ContactMessageRow>;
         Relationships: [];
       };
       sources: {

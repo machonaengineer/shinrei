@@ -31,6 +31,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <AdminNavLink href="/admin/videos">動画</AdminNavLink>
         <AdminNavLink href="/admin/reports">通報</AdminNavLink>
         <AdminNavLink href="/admin/removal-requests">削除依頼</AdminNavLink>
+        <AdminNavLink href="/admin/contact">お問合せ</AdminNavLink>
       </nav>
       {children}
     </div>

@@ -3,8 +3,10 @@ import { supabaseServer } from '@/lib/supabase';
 import { SpotCard } from '@/components/SpotCard';
 import { ReviewCard } from '@/components/ReviewCard';
 import { DisclaimerBox } from '@/components/DisclaimerBox';
-import { CATEGORIES, PREFECTURES, REGIONS, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION } from '@/lib/constants';
+import { CATEGORIES, COUNTRIES, PREFECTURES, REGIONS, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION } from '@/lib/constants';
+import { ARTICLES } from '@/content/articles';
 import { buildMetadata } from '@/lib/seo';
+import { formatDate } from '@/lib/utils';
 import type { Metadata } from 'next';
 
 export const revalidate = 300;
@@ -47,7 +49,8 @@ export default async function HomePage() {
         <p className="text-ink-dim max-w-2xl mx-auto">{SITE_DESCRIPTION}</p>
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <Link href="/map" className="btn-primary">全国の心霊スポットを地図で探す</Link>
-          <Link href="/submit/spot" className="btn-secondary">心霊スポットを投稿する</Link>
+          <Link href="/world" className="btn-secondary">🌐 世界のスポット</Link>
+          <Link href="/submit/spot" className="btn-secondary">スポットを投稿する</Link>
         </div>
       </section>
 
@@ -84,6 +87,42 @@ export default async function HomePage() {
             ))}
           </div>
         )}
+      </section>
+
+      <section>
+        <div className="flex items-end justify-between mb-4">
+          <h2 className="text-xl font-bold text-ink">怪談・民俗・安全ガイド</h2>
+          <Link href="/articles" className="text-sm text-accent hover:underline">すべての記事 →</Link>
+        </div>
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {ARTICLES.slice(0, 6).map((a) => (
+            <li key={a.slug}>
+              <Link
+                href={`/articles/${a.slug}`}
+                className="surface-card block p-4 hover:border-accent transition-colors h-full"
+              >
+                <h3 className="text-ink font-medium leading-snug">{a.title}</h3>
+                <p className="mt-1 text-xs text-ink-dim line-clamp-3">{a.description}</p>
+                <div className="mt-2 text-[11px] text-ink-muted">{formatDate(a.publishedAt)} ・ 約{a.readingMinutes}分</div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h2 className="text-xl font-bold text-ink mb-4">国から探す</h2>
+        <div className="flex flex-wrap gap-2">
+          {COUNTRIES.filter((c) => c.slug !== 'other').map((c) => (
+            <Link
+              key={c.slug}
+              href={c.slug === 'japan' ? '/map' : `/country/${c.slug}`}
+              className="rounded-full border border-bg-border bg-bg-card px-3 py-1 text-sm text-ink-dim hover:border-accent hover:text-ink"
+            >
+              <span className="mr-1" aria-hidden>{c.emoji}</span>{c.name}
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section>

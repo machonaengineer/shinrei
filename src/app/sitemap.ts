@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { supabaseServer } from '@/lib/supabase';
 import { siteUrl } from '@/lib/seo';
 import { CATEGORIES, COUNTRIES, PREFECTURES } from '@/lib/constants';
+import { ARTICLES } from '@/content/articles';
 
 export const revalidate = 3600;
 
@@ -13,13 +14,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '',
     '/map',
     '/world',
+    '/articles',
+    '/about',
+    '/editorial-policy',
+    '/faq',
+    '/contact',
     '/submit/spot',
-    '/report',
-    '/removal-request',
     '/terms',
     '/privacy',
     '/disclaimer',
   ].map((p) => ({ url: `${base}${p}`, lastModified: now, changeFrequency: 'weekly', priority: p === '' ? 1 : 0.7 }));
+
+  const articleUrls: MetadataRoute.Sitemap = ARTICLES.map((a) => ({
+    url: `${base}/articles/${a.slug}`,
+    lastModified: new Date(a.updatedAt ?? a.publishedAt),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
 
   const countryUrls: MetadataRoute.Sitemap = COUNTRIES.map((c) => ({
     url: `${base}/country/${c.slug}`,
@@ -60,5 +71,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Supabase未設定時はスキップ
   }
 
-  return [...staticUrls, ...countryUrls, ...prefUrls, ...catUrls, ...spotUrls];
+  return [...staticUrls, ...articleUrls, ...countryUrls, ...prefUrls, ...catUrls, ...spotUrls];
 }
