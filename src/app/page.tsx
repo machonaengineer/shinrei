@@ -20,7 +20,7 @@ export const metadata: Metadata = buildMetadata({
 export default async function HomePage() {
   const supabase = supabaseServer();
 
-  const [{ data: popularSpots }, { data: latestReviews }] = await Promise.all([
+  const [{ data: popularSpots }, { data: latestReviews }, { count: totalSpots }, { count: foreignSpots }] = await Promise.all([
     supabase
       .from('spots')
       .select('id, slug, name, prefecture, city, category_slug, description, scary_score, review_count, is_entry_prohibited, is_private_property')
@@ -34,10 +34,15 @@ export default async function HomePage() {
       .eq('status', 'published')
       .order('created_at', { ascending: false })
       .limit(5),
+    supabase.from('spots').select('id', { count: 'exact', head: true }).eq('status', 'published'),
+    supabase.from('spots').select('id', { count: 'exact', head: true }).eq('status', 'published').neq('country_slug', 'japan'),
   ]);
 
   const spots = popularSpots ?? [];
   const reviews = latestReviews ?? [];
+  const totalSpotCount = totalSpots ?? 0;
+  const foreignSpotCount = foreignSpots ?? 0;
+  const domesticSpotCount = totalSpotCount - foreignSpotCount;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 space-y-12">
@@ -52,6 +57,13 @@ export default async function HomePage() {
           <Link href="/world" className="btn-secondary">🌐 世界のスポット</Link>
           <Link href="/submit/spot" className="btn-secondary">スポットを投稿する</Link>
         </div>
+        {totalSpotCount > 0 && (
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-4 text-sm text-ink-dim">
+            <span>📍 掲載スポット <strong className="text-ink text-base">{totalSpotCount.toLocaleString()}</strong>件</span>
+            <span>🇯🇵 国内 <strong className="text-ink">{domesticSpotCount.toLocaleString()}</strong>件</span>
+            <span>🌐 海外 <strong className="text-ink">{foreignSpotCount.toLocaleString()}</strong>件</span>
+          </div>
+        )}
       </section>
 
       <DisclaimerBox compact />
