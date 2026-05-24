@@ -31,12 +31,13 @@
 
 # ステップ1: Supabase SQL の適用（10分）
 
-## 1-A. スキーマ + Storage バケット
+## 1-A. スキーマ + Storage バケット + 訪問者カウンター（全部入り）
 1. https://supabase.com/dashboard/project/veitlcibjkxtebcmmwml/sql/new を開く
 2. 別タブで以下を開き、Raw 表示の内容を全文コピー:
    https://raw.githubusercontent.com/machonaengineer/shinrei/claude/haunted-spots-map-app-bFlGP/supabase/phase1_step_a_setup.sql
 3. SQL Editor に貼り付け → Run（青いボタン）
 4. 「Success. No rows returned」または成功メッセージを確認
+   - このファイル一発で：schema + migrations 0001/0002/0003 + RLS + 海外シード + Storage バケット が全て適用される
 
 ## 1-B. 5574 スポットの一括投入
 imported_part1.sql から imported_part15.sql を順番に適用する。
