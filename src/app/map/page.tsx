@@ -14,29 +14,46 @@ export const metadata: Metadata = buildMetadata({
 
 type FlaggedPin = SpotPin & { has_image: boolean; has_video: boolean };
 
+const PAGE_SIZE = 1000;
+const MAX_PAGES = 10; // 最大 10,000 件まで対応
+
 export default async function MapPage() {
   const supabase = supabaseServer();
-  const { data } = await supabase
-    .from('spots')
-    .select(
-      'id, slug, name, lat, lng, category, category_slug, country, country_slug, prefecture, prefecture_slug, scary_score, review_count, is_entry_prohibited, is_private_property',
-    )
-    .eq('status', 'published')
-    .limit(2000);
 
-  const baseSpots: SpotPin[] = (data ?? []) as SpotPin[];
+  // チャンク取得（Supabase のデフォルト max-rows=1000 を range で回避）
+  const baseSpots: SpotPin[] = [];
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    const { data, error } = await supabase
+      .from('spots')
+      .select(
+        'id, slug, name, lat, lng, category, category_slug, country, country_slug, prefecture, prefecture_slug, scary_score, review_count, is_entry_prohibited, is_private_property',
+      )
+      .eq('status', 'published')
+      .range(from, to);
+    if (error || !data || data.length === 0) break;
+    baseSpots.push(...(data as SpotPin[]));
+    if (data.length < PAGE_SIZE) break;
+  }
 
-  // Bulk lookup of which spots have any published image / video
+  // 画像/動画の存在チェック
   const ids = baseSpots.map((s) => s.id);
-  const [imgRes, vidRes] = ids.length
-    ? await Promise.all([
-        supabase.from('spot_images').select('spot_id').eq('status', 'published').in('spot_id', ids),
-        supabase.from('spot_videos').select('spot_id').eq('status', 'published').in('spot_id', ids),
-      ])
-    : [{ data: [] as { spot_id: string | null }[] }, { data: [] as { spot_id: string | null }[] }];
+  const imgSet = new Set<string>();
+  const vidSet = new Set<string>();
 
-  const imgSet = new Set((imgRes.data ?? []).map((r) => r.spot_id ?? ''));
-  const vidSet = new Set((vidRes.data ?? []).map((r) => r.spot_id ?? ''));
+  if (ids.length > 0) {
+    // ids も同様にチャンク化
+    for (let i = 0; i < ids.length; i += PAGE_SIZE) {
+      const chunk = ids.slice(i, i + PAGE_SIZE);
+      const [imgRes, vidRes] = await Promise.all([
+        supabase.from('spot_images').select('spot_id').eq('status', 'published').in('spot_id', chunk),
+        supabase.from('spot_videos').select('spot_id').eq('status', 'published').in('spot_id', chunk),
+      ]);
+      (imgRes.data ?? []).forEach((r) => { if (r.spot_id) imgSet.add(r.spot_id); });
+      (vidRes.data ?? []).forEach((r) => { if (r.spot_id) vidSet.add(r.spot_id); });
+    }
+  }
 
   const spots: FlaggedPin[] = baseSpots.map((s) => ({
     ...s,
@@ -49,7 +66,7 @@ export default async function MapPage() {
       <header className="mb-4">
         <h1 className="text-2xl font-bold text-ink">地図で心霊スポットを探す</h1>
         <p className="text-sm text-ink-dim mt-1">
-          ピンをクリックするとスポット概要を表示します。掲載情報はユーザー投稿・公開情報に基づきます。
+          全 <strong className="text-ink">{spots.length.toLocaleString()}</strong> 件のスポット。ピンをクリックするとスポット概要を表示します。
         </p>
       </header>
       <MapClient spots={spots} />
