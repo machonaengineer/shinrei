@@ -17,6 +17,7 @@ export function Header() {
           <Link href="/articles" className="hover:text-ink">記事</Link>
           <Link href="/submit/spot" className="hover:text-ink">投稿</Link>
           <Link href="/about" className="hover:text-ink">About</Link>
+          <Link href="/en" className="text-ink-muted hover:text-ink border border-bg-border rounded px-2 py-0.5 text-xs">EN</Link>
         </nav>
         <Link
           href="/map"

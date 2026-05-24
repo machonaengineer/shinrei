@@ -3,6 +3,7 @@ import { supabaseServer } from '@/lib/supabase';
 import { SpotCard } from '@/components/SpotCard';
 import { ReviewCard } from '@/components/ReviewCard';
 import { DisclaimerBox } from '@/components/DisclaimerBox';
+import { VisitorCounter } from '@/components/VisitorCounter';
 import { CATEGORIES, COUNTRIES, PREFECTURES, REGIONS, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION } from '@/lib/constants';
 import { ARTICLES } from '@/content/articles';
 import { buildMetadata } from '@/lib/seo';
@@ -64,6 +65,9 @@ export default async function HomePage() {
             <span>🌐 海外 <strong className="text-ink">{foreignSpotCount.toLocaleString()}</strong>件</span>
           </div>
         )}
+        <div className="pt-3 flex justify-center">
+          <VisitorCounter />
+        </div>
       </section>
 
       <DisclaimerBox compact />

@@ -295,6 +295,12 @@ export interface Database {
         Update: Partial<SpotImageRow>;
         Relationships: [];
       };
+      visit_counter: {
+        Row: { id: number; total_count: number; updated_at: string };
+        Insert: { id?: number; total_count?: number };
+        Update: { id?: number; total_count?: number };
+        Relationships: [];
+      };
       contact_messages: {
         Row: ContactMessageRow;
         Insert: {
