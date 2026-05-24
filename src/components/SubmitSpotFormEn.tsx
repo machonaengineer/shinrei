@@ -1,8 +1,19 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import dynamic from 'next/dynamic';
 import { submitSpotAction, type SubmitSpotResult } from '@/app/actions/submit-spot';
 import { CATEGORIES, COUNTRIES, PREFECTURES } from '@/lib/constants';
+
+const SpotLocationPicker = dynamic(
+  () => import('./SpotLocationPicker').then((m) => m.SpotLocationPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="surface-soft p-6 text-center text-sm text-ink-dim">Loading map…</div>
+    ),
+  },
+);
 
 export function SubmitSpotFormEn() {
   const [pending, startTransition] = useTransition();
@@ -118,15 +129,9 @@ export function SubmitSpotFormEn() {
         </select>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label htmlFor="lat" className="label">Latitude<span className="required-mark">*</span></label>
-          <input id="lat" name="lat" type="number" step="any" required className="input" placeholder="35.681236" />
-        </div>
-        <div>
-          <label htmlFor="lng" className="label">Longitude<span className="required-mark">*</span></label>
-          <input id="lng" name="lng" type="number" step="any" required className="input" placeholder="139.767125" />
-        </div>
+      <div>
+        <label className="label">Pick the location on the map<span className="required-mark">*</span></label>
+        <SpotLocationPicker latName="lat" lngName="lng" height="40vh" />
       </div>
 
       <div>

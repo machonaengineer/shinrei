@@ -1,10 +1,21 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import dynamic from 'next/dynamic';
 import { submitSpotAction, type SubmitSpotResult } from '@/app/actions/submit-spot';
 import { CATEGORIES, PREFECTURES } from '@/lib/constants';
 import { RulesBox } from './RulesBox';
 import { DisclaimerBox } from './DisclaimerBox';
+
+const SpotLocationPicker = dynamic(
+  () => import('./SpotLocationPicker').then((m) => m.SpotLocationPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="surface-soft p-6 text-center text-sm text-ink-dim">地図を読み込み中…</div>
+    ),
+  },
+);
 
 export function SubmitSpotForm() {
   const [pending, startTransition] = useTransition();
@@ -80,17 +91,14 @@ export function SubmitSpotForm() {
         {fieldErrors.categorySlug && <p className="mt-1 text-xs text-accent-red">{fieldErrors.categorySlug}</p>}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div>
-          <label htmlFor="lat" className="label">緯度<span className="required-mark">*</span></label>
-          <input id="lat" name="lat" type="number" step="any" required className="input" placeholder="35.681236" />
-          {fieldErrors.lat && <p className="mt-1 text-xs text-accent-red">{fieldErrors.lat}</p>}
-        </div>
-        <div>
-          <label htmlFor="lng" className="label">経度<span className="required-mark">*</span></label>
-          <input id="lng" name="lng" type="number" step="any" required className="input" placeholder="139.767125" />
-          {fieldErrors.lng && <p className="mt-1 text-xs text-accent-red">{fieldErrors.lng}</p>}
-        </div>
+      <div>
+        <label className="label">場所<span className="required-mark">*</span></label>
+        <SpotLocationPicker latName="lat" lngName="lng" height="40vh" />
+        {(fieldErrors.lat || fieldErrors.lng) && (
+          <p className="mt-1 text-xs text-accent-red">
+            場所をピンで選択してください
+          </p>
+        )}
       </div>
 
       <div>
