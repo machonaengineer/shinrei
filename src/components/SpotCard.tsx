@@ -40,7 +40,6 @@ export function SpotCard({ spot }: { spot: Pick<Spot, 'slug' | 'name' | 'prefect
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 rounded bg-red-600/15 text-red-300 px-2 py-1 hover:bg-red-600/30"
-          onClick={(e) => e.stopPropagation()}
         >
           ▶ YouTube
         </a>
@@ -49,7 +48,6 @@ export function SpotCard({ spot }: { spot: Pick<Spot, 'slug' | 'name' | 'prefect
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 rounded bg-pink-500/15 text-pink-300 px-2 py-1 hover:bg-pink-500/30"
-          onClick={(e) => e.stopPropagation()}
         >
           🎵 TikTok
         </a>
