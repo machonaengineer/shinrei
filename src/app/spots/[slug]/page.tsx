@@ -11,6 +11,7 @@ import { WarningBox } from '@/components/WarningBox';
 import { PhotoGallery } from '@/components/PhotoGallery';
 import { VideoEmbed, VideoSearchLinks } from '@/components/VideoEmbed';
 import { VideoSubmitForm } from '@/components/VideoSubmitForm';
+import { ShareButtons } from '@/components/ShareButtons';
 import { buildMetadata, siteUrl } from '@/lib/seo';
 import { SITE_NAME, COUNTRY_BY_SLUG } from '@/lib/constants';
 import type { SpotPin } from '@/types/spot';
@@ -250,7 +251,16 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
 
       <DisclaimerBox />
 
-      {/* 7. 通報・削除依頼 */}
+      {/* 7. シェア */}
+      <section className="surface-soft p-4 space-y-2">
+        <h3 className="text-ink font-semibold text-sm">このスポットをシェア</h3>
+        <ShareButtons
+          title={`${spot.name}｜心霊マップ`}
+          url={new URL(`/spots/${spot.slug}`, siteUrl()).toString()}
+        />
+      </section>
+
+      {/* 8. 通報・削除依頼 */}
       <div className="flex flex-wrap gap-3 text-sm">
         <Link href={`/report?targetType=spot&targetId=${spot.id}`} className="btn-secondary">
           この投稿を通報する
