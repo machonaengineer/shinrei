@@ -22,6 +22,7 @@
 - Supabase Project URL: https://veitlcibjkxtebcmmwml.supabase.co
 - Supabase Project Ref: veitlcibjkxtebcmmwml
 - Admin email: imai.ryunosuke80@gmail.com
+- AdSense / GA4 / Search Console 全て同じ Google アカウント（imai.ryunosuke80@gmail.com）で運用
 
 ## 全体方針
 - service_role key、AdSense secret、admin password などは絶対にチャットに表示しない（コピペで Vercel に直接貼ること）
@@ -124,22 +125,24 @@ imported_part1.sql から imported_part15.sql を順番に適用する。
 # ステップ6: Google AdSense 申請（5分）
 
 注: 審査には数日〜数週間かかります。このステップでは申請の提出までを行います。
+注: imai.ryunosuke80@gmail.com で AdSense にログインしてください（他アカウントでログイン中の場合は切り替え）。
 
 1. https://www.google.com/adsense を開く
-2. もしまだなら「お申し込み」または「ご利用開始」
-3. サイト URL: https://shinrei.vercel.app
-4. お支払い先住所等を入力
-5. 「サイトを AdSense にリンクする」画面で表示される Publisher ID（ca-pub-XXXXXXXXXXXXXXXX）をコピー
-6. Vercel Environment Variables に追加:
+2. imai.ryunosuke80@gmail.com でログイン状態であることを必ず確認（右上のアカウントアイコン）
+3. もしまだなら「お申し込み」または「ご利用開始」
+4. サイト URL: https://shinrei.vercel.app
+5. お支払い先住所等を入力（個人事業主としての本人名義・現住所。後日 PIN コードが郵送される）
+6. 「サイトを AdSense にリンクする」画面で表示される Publisher ID（ca-pub-XXXXXXXXXXXXXXXX）をコピー
+7. Vercel Environment Variables に追加:
    - NEXT_PUBLIC_ADSENSE_CLIENT_ID = ca-pub-XXXXXXXXXXXXXXXX
-7. Vercel で Redeploy
-8. デプロイ後、以下を確認:
+8. Vercel で Redeploy
+9. デプロイ後、以下を確認:
    - https://shinrei.vercel.app/ads.txt が
      google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
      のような形式で返ること
    - shinrei.vercel.app のページソースに pagead2.googlesyndication.com の script タグが入っていること
-9. AdSense 画面に戻り、「サイトを確認」をクリック
-10. 確認完了後、AdSense 申請を提出（審査開始）
+10. AdSense 画面に戻り、「サイトを確認」をクリック
+11. 確認完了後、AdSense 申請を提出（審査開始）
 
 # ステップ7: 管理者アカウント作成（2分）
 
