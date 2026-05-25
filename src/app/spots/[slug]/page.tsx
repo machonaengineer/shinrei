@@ -14,6 +14,7 @@ import { VideoSubmitForm } from '@/components/VideoSubmitForm';
 import { ShareButtons } from '@/components/ShareButtons';
 import { SpotCard } from '@/components/SpotCard';
 import { buildMetadata, siteUrl } from '@/lib/seo';
+import { decodeSlug } from '@/lib/utils';
 import { SITE_NAME, COUNTRY_BY_SLUG, PREFECTURE_BY_SLUG, CATEGORY_BY_SLUG } from '@/lib/constants';
 import type { SpotPin } from '@/types/spot';
 
@@ -23,10 +24,11 @@ type Params = { slug: string };
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const supabase = supabaseServer();
+  const slug = decodeSlug(params.slug);
   const { data } = await supabase
     .from('spots')
     .select('name, description, country, prefecture, category, slug, status')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .single();
 
   if (!data || data.status !== 'published') {
@@ -44,11 +46,12 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function SpotDetailPage({ params }: { params: Params }) {
   const supabase = supabaseServer();
+  const slug = decodeSlug(params.slug);
 
   const { data: spot } = await supabase
     .from('spots')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .eq('status', 'published')
     .single();
 

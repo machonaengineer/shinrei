@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { supabaseServer } from '@/lib/supabase';
 import { PhotoUploadForm } from '@/components/PhotoUploadForm';
 import { buildMetadata } from '@/lib/seo';
+import { decodeSlug } from '@/lib/utils';
 
 type Params = { slug: string };
 
@@ -20,7 +21,7 @@ export default async function PhotoSubmitPage({ params }: { params: Params }) {
   const { data: spot } = await supabase
     .from('spots')
     .select('name, slug')
-    .eq('slug', params.slug)
+    .eq('slug', decodeSlug(params.slug))
     .eq('status', 'published')
     .single();
 

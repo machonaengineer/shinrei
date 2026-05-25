@@ -74,3 +74,16 @@ export function safeString(value: FormDataEntryValue | null): string {
 export function safeBoolean(value: FormDataEntryValue | null): boolean {
   return value === 'on' || value === 'true' || value === '1';
 }
+
+/**
+ * Next.js dynamic route params are not always URL-decoded (non-ASCII slugs
+ * can arrive percent-encoded). Decode defensively — idempotent for already
+ * decoded strings, and falls back to the raw value if decoding throws.
+ */
+export function decodeSlug(raw: string): string {
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
