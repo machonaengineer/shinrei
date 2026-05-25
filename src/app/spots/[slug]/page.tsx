@@ -12,8 +12,9 @@ import { PhotoGallery } from '@/components/PhotoGallery';
 import { VideoEmbed, VideoSearchLinks } from '@/components/VideoEmbed';
 import { VideoSubmitForm } from '@/components/VideoSubmitForm';
 import { ShareButtons } from '@/components/ShareButtons';
+import { SpotCard } from '@/components/SpotCard';
 import { buildMetadata, siteUrl } from '@/lib/seo';
-import { SITE_NAME, COUNTRY_BY_SLUG } from '@/lib/constants';
+import { SITE_NAME, COUNTRY_BY_SLUG, PREFECTURE_BY_SLUG, CATEGORY_BY_SLUG } from '@/lib/constants';
 import type { SpotPin } from '@/types/spot';
 
 export const revalidate = 60;
@@ -53,7 +54,7 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
 
   if (!spot) notFound();
 
-  const [{ data: reviewsData }, { data: imagesData }, { data: videosData }] = await Promise.all([
+  const [{ data: reviewsData }, { data: imagesData }, { data: videosData }, { data: relatedPref }, { data: relatedCat }] = await Promise.all([
     supabase
       .from('reviews')
       .select('*')
@@ -75,11 +76,29 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
       .eq('status', 'published')
       .order('created_at', { ascending: false })
       .limit(6),
+    supabase
+      .from('spots')
+      .select('id, slug, name, prefecture, city, category_slug, description, scary_score, review_count, is_entry_prohibited, is_private_property')
+      .eq('status', 'published')
+      .eq('prefecture_slug', spot.prefecture_slug)
+      .neq('id', spot.id)
+      .order('scary_score', { ascending: false })
+      .limit(6),
+    supabase
+      .from('spots')
+      .select('id, slug, name, prefecture, city, category_slug, description, scary_score, review_count, is_entry_prohibited, is_private_property')
+      .eq('status', 'published')
+      .eq('category_slug', spot.category_slug)
+      .neq('id', spot.id)
+      .order('scary_score', { ascending: false })
+      .limit(6),
   ]);
 
   const reviews = reviewsData ?? [];
   const images = imagesData ?? [];
   const videos = videosData ?? [];
+  const relatedByPref = relatedPref ?? [];
+  const relatedByCat = relatedCat ?? [];
 
   const pin: SpotPin = {
     id: spot.id,
@@ -251,7 +270,44 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
 
       <DisclaimerBox />
 
-      {/* 7. シェア */}
+      {/* 関連スポット（内部リンク強化） */}
+      {relatedByPref.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-ink">
+              {PREFECTURE_BY_SLUG[spot.prefecture_slug]?.name ?? spot.prefecture}の他のスポット
+            </h2>
+            <Link href={isForeign ? `/country/${spot.country_slug}` : `/area/${spot.prefecture_slug}`} className="text-sm text-accent hover:underline">
+              すべて見る →
+            </Link>
+          </div>
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedByPref.map((s) => (
+              <li key={s.id}><SpotCard spot={s} /></li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {relatedByCat.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-ink">
+              {CATEGORY_BY_SLUG[spot.category_slug]?.name ?? spot.category}カテゴリの他のスポット
+            </h2>
+            <Link href={`/category/${spot.category_slug}`} className="text-sm text-accent hover:underline">
+              すべて見る →
+            </Link>
+          </div>
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedByCat.map((s) => (
+              <li key={s.id}><SpotCard spot={s} /></li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* シェア */}
       <section className="surface-soft p-4 space-y-2">
         <h3 className="text-ink font-semibold text-sm">このスポットをシェア</h3>
         <ShareButtons
