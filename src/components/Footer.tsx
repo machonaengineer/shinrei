@@ -34,6 +34,7 @@ export function Footer() {
           <div>
             <h3 className="text-ink font-semibold mb-2">規約・免責</h3>
             <ul className="space-y-1">
+              <li><Link href="/safety-guidelines" className="hover:text-ink">安全に楽しむためのガイドライン</Link></li>
               <li><Link href="/disclaimer" className="hover:text-ink">免責事項</Link></li>
               <li><Link href="/terms" className="hover:text-ink">利用規約</Link></li>
               <li><Link href="/privacy" className="hover:text-ink">プライバシーポリシー</Link></li>

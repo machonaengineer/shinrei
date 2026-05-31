@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { trackEvent, Events } from '@/lib/analytics';
 
 export function ShareButtons({ title, url }: { title: string; url: string }) {
   const [copied, setCopied] = useState(false);
@@ -10,7 +11,12 @@ export function ShareButtons({ title, url }: { title: string; url: string }) {
   const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`;
   const lineUrl = `https://line.me/R/share?text=${enc(title + ' ' + url)}`;
 
+  function onShare(channel: 'x' | 'facebook' | 'line') {
+    trackEvent(Events.ShareClick, { channel, url });
+  }
+
   async function copyLink() {
+    trackEvent(Events.CopyUrlClick, { url });
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
@@ -26,6 +32,7 @@ export function ShareButtons({ title, url }: { title: string; url: string }) {
         href={xUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => onShare('x')}
         className="inline-flex items-center gap-1 rounded border border-bg-border bg-bg-card px-2.5 py-1 text-ink-dim hover:text-ink hover:border-accent"
       >
         𝕏 でシェア
@@ -34,6 +41,7 @@ export function ShareButtons({ title, url }: { title: string; url: string }) {
         href={fbUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => onShare('facebook')}
         className="inline-flex items-center gap-1 rounded border border-bg-border bg-bg-card px-2.5 py-1 text-ink-dim hover:text-ink hover:border-accent"
       >
         Facebook
@@ -42,6 +50,7 @@ export function ShareButtons({ title, url }: { title: string; url: string }) {
         href={lineUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => onShare('line')}
         className="inline-flex items-center gap-1 rounded border border-bg-border bg-bg-card px-2.5 py-1 text-ink-dim hover:text-ink hover:border-accent"
       >
         LINE

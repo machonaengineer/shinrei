@@ -30,19 +30,28 @@ const INK = '#e7e7ee';
 const INK_DIM = '#a0a0b5';
 
 function MapGrid() {
-  // a sparse purple grid layer behind content
+  // Decorative scattered dots — Satori-safe (no CSS gradients).
+  const dots: Array<{ x: number; y: number }> = [];
+  for (let y = 30; y < 600; y += 60) {
+    for (let x = 30; x < 1170; x += 60) dots.push({ x, y });
+  }
   return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundImage: `
-          linear-gradient(rgba(157,78,221,0.08) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(157,78,221,0.08) 1px, transparent 1px)
-        `,
-        backgroundSize: '60px 60px',
-      }}
-    />
+    <>
+      {dots.map((d, i) => (
+        <div
+          key={`g-${i}`}
+          style={{
+            position: 'absolute',
+            top: d.y,
+            left: d.x,
+            width: 2,
+            height: 2,
+            background: '#9d4edd',
+            opacity: 0.18,
+          }}
+        />
+      ))}
+    </>
   );
 }
 
@@ -76,7 +85,7 @@ function PinDots() {
             borderRadius: 999,
             background: ACCENT,
             opacity: 0.6,
-            boxShadow: `0 0 0 4px ${ACCENT}30, 0 0 12px ${ACCENT}66`,
+            border: `4px solid rgba(157,78,221,0.18)`,
           }}
         />
       ))}
@@ -101,13 +110,18 @@ export function ogTemplate({ title, subtitle, tag, emoji = '👻' }: OgInput) {
       <MapGrid />
       <PinDots />
 
-      {/* gradient glow */}
+      {/* solid accent glow blob */}
       <div
         style={{
           position: 'absolute',
-          inset: 0,
-          background:
-            'radial-gradient(ellipse at 60% 50%, rgba(157,78,221,0.15), transparent 60%)',
+          left: 800,
+          top: 200,
+          width: 600,
+          height: 600,
+          borderRadius: 999,
+          background: '#9d4edd',
+          opacity: 0.08,
+          filter: 'blur(80px)',
         }}
       />
 
@@ -140,7 +154,7 @@ export function ogTemplate({ title, subtitle, tag, emoji = '👻' }: OgInput) {
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: 32,
-              boxShadow: `0 4px 16px ${ACCENT}66`,
+              border: `2px solid rgba(255,255,255,0.08)`,
             }}
           >
             {emoji}
