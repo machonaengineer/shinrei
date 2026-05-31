@@ -12,11 +12,29 @@ import type { Metadata } from 'next';
 
 export const revalidate = 300;
 
-export const metadata: Metadata = buildMetadata({
-  title: undefined,
-  description: `${SITE_TAGLINE}。${SITE_DESCRIPTION}`,
-  path: '/',
-});
+const TOP_TITLE = '心霊マップ｜全国の心霊スポット・怪談・都市伝説を地図で検索';
+const TOP_DESC =
+  '全国の心霊スポット、怪談、都市伝説を地図で探せる心霊マップ。都道府県別、カテゴリ別、現在地周辺から検索可能。安全・合法に噂の場所を楽しむための情報サイトです。';
+
+export const metadata: Metadata = {
+  title: TOP_TITLE,
+  description: TOP_DESC,
+  alternates: {
+    canonical: '/',
+    languages: { ja: '/', en: '/en' },
+  },
+  openGraph: {
+    title: TOP_TITLE,
+    description: TOP_DESC,
+    type: 'website',
+    locale: 'ja_JP',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: TOP_TITLE,
+    description: TOP_DESC,
+  },
+};
 
 export default async function HomePage() {
   const supabase = supabaseServer();
@@ -50,27 +68,78 @@ export default async function HomePage() {
       <section className="text-center space-y-5">
         <p className="text-accent text-sm tracking-widest">👻 SHINREI MAP 👻</p>
         <h1 className="text-3xl md:text-5xl font-bold text-ink leading-tight">
-          {SITE_TAGLINE}
+          全国の心霊・怪談スポットを地図で探す
         </h1>
-        <p className="text-ink-dim max-w-2xl mx-auto">{SITE_DESCRIPTION}</p>
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <Link href="/map" className="btn-primary">全国の心霊スポットを地図で探す</Link>
-          <Link href="/world" className="btn-secondary">🌐 世界のスポット</Link>
-          <Link href="/submit/spot" className="btn-secondary">スポットを投稿する</Link>
-        </div>
+        <p className="text-ink-dim max-w-2xl mx-auto">
+          近くの&ldquo;噂の場所&rdquo;を、安全・合法に楽しむ心霊マップ。
+        </p>
         {totalSpotCount > 0 && (
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-4 text-sm text-ink-dim">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-ink-dim">
             <span>📍 掲載スポット <strong className="text-ink text-base">{totalSpotCount.toLocaleString()}</strong>件</span>
             <span>🇯🇵 国内 <strong className="text-ink">{domesticSpotCount.toLocaleString()}</strong>件</span>
             <span>🌐 海外 <strong className="text-ink">{foreignSpotCount.toLocaleString()}</strong>件</span>
           </div>
         )}
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 max-w-3xl mx-auto pt-2">
+          <Link
+            href="/map?near=1"
+            className="surface-card hover:border-accent block px-4 py-5 text-left"
+          >
+            <div className="text-2xl mb-1">📍</div>
+            <div className="font-semibold text-ink">近くの心霊スポットを探す</div>
+            <div className="text-xs text-ink-dim mt-1">現在地の周辺を地図で表示</div>
+          </Link>
+          <Link
+            href="#area"
+            className="surface-card hover:border-accent block px-4 py-5 text-left"
+          >
+            <div className="text-2xl mb-1">🗾</div>
+            <div className="font-semibold text-ink">都道府県から探す</div>
+            <div className="text-xs text-ink-dim mt-1">47 都道府県を一覧表示</div>
+          </Link>
+          <Link
+            href="#category"
+            className="surface-card hover:border-accent block px-4 py-5 text-left"
+          >
+            <div className="text-2xl mb-1">🏷</div>
+            <div className="font-semibold text-ink">カテゴリから探す</div>
+            <div className="text-xs text-ink-dim mt-1">トンネル / 廃墟 / 公園 ほか</div>
+          </Link>
+          <Link
+            href="/ranking"
+            className="surface-card hover:border-accent block px-4 py-5 text-left"
+          >
+            <div className="text-2xl mb-1">⭐</div>
+            <div className="font-semibold text-ink">人気ランキングを見る</div>
+            <div className="text-xs text-ink-dim mt-1">怖さ / 口コミ / 写真 / 動画</div>
+          </Link>
+          <Link
+            href="/submit/spot"
+            className="surface-card hover:border-accent block px-4 py-5 text-left"
+          >
+            <div className="text-2xl mb-1">✍️</div>
+            <div className="font-semibold text-ink">地元の噂を投稿する</div>
+            <div className="text-xs text-ink-dim mt-1">承認制 / 無料</div>
+          </Link>
+          <Link
+            href="/world"
+            className="surface-card hover:border-accent block px-4 py-5 text-left"
+          >
+            <div className="text-2xl mb-1">🌐</div>
+            <div className="font-semibold text-ink">海外のスポットを見る</div>
+            <div className="text-xs text-ink-dim mt-1">20 カ国の怪談・伝承</div>
+          </Link>
+        </div>
         <div className="pt-3 flex justify-center">
           <VisitorCounter />
         </div>
       </section>
 
-      <DisclaimerBox compact />
+      <aside className="surface-soft px-4 py-3 text-xs text-ink-dim text-center leading-relaxed">
+        本サイトは噂・怪談・都市伝説を楽しむための情報サイトです。
+        <strong className="text-ink-dim">無断侵入、近隣迷惑、危険行為は絶対に行わないでください。</strong>
+        詳しくは <Link href="/safety-guidelines" className="text-accent hover:underline">安全に楽しむためのガイドライン</Link> をご覧ください。
+      </aside>
 
       <section>
         <div className="flex items-end justify-between mb-4">
@@ -141,7 +210,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section>
+      <section id="category">
         <h2 className="text-xl font-bold text-ink mb-4">カテゴリから探す</h2>
         <div className="flex flex-wrap gap-2">
           {CATEGORIES.map((c) => (
@@ -156,7 +225,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section>
+      <section id="area">
         <h2 className="text-xl font-bold text-ink mb-4">都道府県から探す</h2>
         <div className="space-y-4">
           {REGIONS.map((region) => (

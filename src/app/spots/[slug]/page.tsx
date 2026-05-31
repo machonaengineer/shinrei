@@ -35,8 +35,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     return buildMetadata({ title: 'スポットが見つかりません', path: `/spots/${params.slug}`, noindex: true });
   }
   const where = data.country && data.country !== '日本' ? `${data.country} ${data.prefecture}` : data.prefecture;
-  const title = `${data.name}の口コミ・心霊体験談`;
-  const description = `${where}の心霊スポット「${data.name}」（カテゴリ:${data.category}）の口コミ、怪談、都市伝説。掲載内容はユーザー投稿に基づく体験談であり、真偽を保証するものではありません。`;
+  const title = `${data.name}｜${where}の心霊スポット`;
+  const description = `${data.name}は${where}にある心霊・怪談スポットです。噂や口コミ、写真、動画、周辺スポットを確認できます。無断侵入や迷惑行為は行わず、安全に閲覧してください。`;
   return buildMetadata({
     title,
     description,
