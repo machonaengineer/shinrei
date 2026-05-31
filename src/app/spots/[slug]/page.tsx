@@ -254,7 +254,14 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
           <Link href={`/spots/${spot.slug}/review`} className="btn-primary text-sm">体験談を投稿する</Link>
         </div>
         {reviews.length === 0 ? (
-          <p className="surface-card p-6 text-center text-ink-dim">まだ口コミはありません。</p>
+          <div className="surface-card p-6 text-center space-y-3">
+            <div className="text-ink-dim text-sm">まだ口コミはありません。</div>
+            <div className="text-ink-dim text-xs">最初の体験談・噂を投稿してこのスポットを盛り上げましょう。</div>
+            <div className="flex flex-wrap gap-2 justify-center pt-2">
+              <Link href={`/spots/${spot.slug}/review`} className="btn-primary text-sm">最初の口コミを書く</Link>
+              <Link href={`/spots/${spot.slug}/photo`} className="btn-secondary text-sm">写真を投稿する</Link>
+            </div>
+          </div>
         ) : (
           <div className="grid gap-3">
             {reviews.map((r) => (

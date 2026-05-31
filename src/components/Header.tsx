@@ -11,20 +11,23 @@ export function Header() {
         </Link>
         <nav className="hidden md:flex items-center gap-4 text-sm text-ink-dim">
           <Link href="/map" className="hover:text-ink">地図</Link>
-          <Link href="/world" className="hover:text-ink">🌐 世界</Link>
-          <Link href="/ranking" className="hover:text-ink">⭐ ランキング</Link>
+          <Link href="/ranking" className="hover:text-ink">ランキング</Link>
+          <Link href="/world" className="hover:text-ink">世界</Link>
           <Link href="/yokai" className="hover:text-ink">妖怪</Link>
           <Link href="/articles" className="hover:text-ink">記事</Link>
-          <Link href="/submit/spot" className="hover:text-ink">投稿</Link>
           <Link href="/about" className="hover:text-ink">About</Link>
           <Link href="/en" className="text-ink-muted hover:text-ink border border-bg-border rounded px-2 py-0.5 text-xs">EN</Link>
+          <Link
+            href="/submit/spot"
+            className="ml-1 rounded-md bg-accent text-white px-3 py-1.5 hover:bg-accent-soft text-sm"
+          >
+            ✍️ 投稿
+          </Link>
         </nav>
-        <Link
-          href="/map"
-          className="md:hidden btn-secondary text-sm px-3 py-1.5"
-        >
-          地図
-        </Link>
+        <div className="md:hidden flex items-center gap-2">
+          <Link href="/map" className="btn-secondary text-sm px-3 py-1.5">地図</Link>
+          <Link href="/submit/spot" className="rounded-md bg-accent text-white px-3 py-1.5 text-sm">✍️</Link>
+        </div>
       </div>
     </header>
   );
