@@ -1,16 +1,46 @@
+'use client';
+
 import Link from 'next/link';
 import type { Spot } from '@/types/spot';
 import { CategoryBadge } from './CategoryBadge';
 import { ScaryScore } from './ScaryScore';
 import { truncate } from '@/lib/utils';
+import { trackEvent, Events } from '@/lib/analytics';
 
-export function SpotCard({ spot }: { spot: Pick<Spot, 'slug' | 'name' | 'prefecture' | 'city' | 'category_slug' | 'description' | 'scary_score' | 'review_count' | 'is_entry_prohibited' | 'is_private_property'> }) {
+type SpotCardSpot = Pick<
+  Spot,
+  | 'slug'
+  | 'name'
+  | 'prefecture'
+  | 'city'
+  | 'category_slug'
+  | 'description'
+  | 'scary_score'
+  | 'review_count'
+  | 'is_entry_prohibited'
+  | 'is_private_property'
+>;
+
+export function SpotCard({ spot }: { spot: SpotCardSpot }) {
   const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(spot.name + ' 心霊')}`;
   const tiktokUrl = `https://www.tiktok.com/search?q=${encodeURIComponent(spot.name + ' 心霊')}`;
 
+  function onCardClick() {
+    trackEvent(Events.SpotView, {
+      slug: spot.slug,
+      prefecture: spot.prefecture,
+      category: spot.category_slug,
+      source: 'spot_card',
+    });
+  }
+
   return (
     <div className="surface-card p-4 hover:border-accent transition-colors flex flex-col h-full">
-      <Link href={`/spots/${spot.slug}`} className="flex-1 block">
+      <Link
+        href={`/spots/${spot.slug}`}
+        className="flex-1 block"
+        onClick={onCardClick}
+      >
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-ink font-semibold leading-snug">{spot.name}</h3>
           <CategoryBadge slug={spot.category_slug} />
@@ -54,6 +84,7 @@ export function SpotCard({ spot }: { spot: Pick<Spot, 'slug' | 'name' | 'prefect
         <Link
           href={`/spots/${spot.slug}`}
           className="ml-auto text-accent hover:underline"
+          onClick={onCardClick}
         >
           詳細 →
         </Link>

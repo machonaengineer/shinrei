@@ -1,5 +1,3 @@
-import crypto from 'node:crypto';
-
 export function cn(...classes: Array<string | false | null | undefined>): string {
   return classes.filter(Boolean).join(' ');
 }
@@ -25,11 +23,6 @@ export function buildSpotSlug(name: string): string {
   return `${safe}-${randomSlugSuffix(6)}`;
 }
 
-export function hashIp(ip: string | null | undefined): string {
-  const salt = process.env.IP_HASH_SALT ?? 'dev-salt';
-  const value = ip ?? 'unknown';
-  return crypto.createHash('sha256').update(`${salt}:${value}`).digest('hex');
-}
 
 export function clampNumber(value: number, min: number, max: number): number {
   if (Number.isNaN(value)) return min;

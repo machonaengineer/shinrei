@@ -6,6 +6,7 @@ import { MapViewDynamic } from '@/components/MapViewDynamic';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { ScaryScore } from '@/components/ScaryScore';
 import { CATEGORIES, COUNTRIES, PREFECTURES } from '@/lib/constants';
+import { trackEvent, Events } from '@/lib/analytics';
 import type { SpotPin } from '@/types/spot';
 
 type FlaggedPin = SpotPin & { has_image: boolean; has_video: boolean };
@@ -36,11 +37,16 @@ export function MapClient({ spots }: { spots: FlaggedPin[] }) {
   }, [spots, scope, country, category, prefecture, minScary, withImage, withVideo, query]);
 
   function findNearMe() {
+    trackEvent(Events.NearbySearchClick);
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(() => {
       const el = document.getElementById('map-spot-list');
       el?.scrollIntoView({ behavior: 'smooth' });
     });
+  }
+
+  function onFilter(name: string, value: string | number | boolean) {
+    trackEvent(Events.MapFilterClick, { filter: name, value: String(value) });
   }
 
   return (
@@ -50,7 +56,7 @@ export function MapClient({ spots }: { spots: FlaggedPin[] }) {
           {(['all', 'japan', 'world'] as const).map((s) => (
             <button
               key={s}
-              onClick={() => setScope(s)}
+              onClick={() => { onFilter('scope', s); setScope(s); }}
               className={`rounded-full px-3 py-1 border ${scope === s ? 'border-accent text-ink' : 'border-bg-border text-ink-dim hover:text-ink'}`}
             >
               {s === 'all' ? 'すべて' : s === 'japan' ? '🇯🇵 日本' : '🌐 海外'}
@@ -63,13 +69,13 @@ export function MapClient({ spots }: { spots: FlaggedPin[] }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <select className="input" value={category} onChange={(e) => setCategory(e.target.value)}>
+        <select className="input" value={category} onChange={(e) => { onFilter('category', e.target.value); setCategory(e.target.value); }}>
           <option value="">カテゴリ：すべて</option>
           {CATEGORIES.map((c) => (
             <option key={c.slug} value={c.slug}>{c.emoji} {c.name}</option>
           ))}
         </select>
-        <select className="input" value={minScary} onChange={(e) => setMinScary(Number(e.target.value))}>
+        <select className="input" value={minScary} onChange={(e) => { onFilter('minScary', Number(e.target.value)); setMinScary(Number(e.target.value)); }}>
           <option value={0}>怖さ：すべて</option>
           <option value={2}>★2以上</option>
           <option value={3}>★3以上</option>
@@ -84,7 +90,7 @@ export function MapClient({ spots }: { spots: FlaggedPin[] }) {
             <option key={c.slug} value={c.slug}>{c.emoji} {c.name}</option>
           ))}
         </select>
-        <select className="input" value={prefecture} onChange={(e) => setPrefecture(e.target.value)} disabled={scope === 'world'}>
+        <select className="input" value={prefecture} onChange={(e) => { onFilter('prefecture', e.target.value); setPrefecture(e.target.value); }} disabled={scope === 'world'}>
           <option value="">都道府県：すべて</option>
           {PREFECTURES.map((p) => (
             <option key={p.slug} value={p.slug}>{p.name}</option>

@@ -126,30 +126,45 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Place',
-    name: spot.name,
-    description: spot.description ?? undefined,
-    address: {
-      '@type': 'PostalAddress',
-      addressRegion: spot.prefecture,
-      addressLocality: spot.city ?? undefined,
-      addressCountry: spot.country_slug === 'japan' ? 'JP' : spot.country,
-    },
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: spot.lat,
-      longitude: spot.lng,
-    },
-    url: new URL(`/spots/${spot.slug}`, siteUrl()).toString(),
-    aggregateRating: spot.review_count > 0 ? {
-      '@type': 'AggregateRating',
-      ratingValue: Number(spot.scary_score),
-      reviewCount: spot.review_count,
-      bestRating: 5,
-      worstRating: 1,
-    } : undefined,
-    isAccessibleForFree: true,
-    publisher: { '@type': 'Organization', name: SITE_NAME },
+    '@graph': [
+      {
+        '@type': 'Place',
+        name: spot.name,
+        description: spot.description ?? undefined,
+        address: {
+          '@type': 'PostalAddress',
+          addressRegion: spot.prefecture,
+          addressLocality: spot.city ?? undefined,
+          addressCountry: spot.country_slug === 'japan' ? 'JP' : spot.country,
+        },
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: spot.lat,
+          longitude: spot.lng,
+        },
+        url: new URL(`/spots/${spot.slug}`, siteUrl()).toString(),
+        aggregateRating: spot.review_count > 0 ? {
+          '@type': 'AggregateRating',
+          ratingValue: Number(spot.scary_score),
+          reviewCount: spot.review_count,
+          bestRating: 5,
+          worstRating: 1,
+        } : undefined,
+        isAccessibleForFree: true,
+        publisher: { '@type': 'Organization', name: SITE_NAME },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'ホーム', item: siteUrl() },
+          isForeign
+            ? { '@type': 'ListItem', position: 2, name: spot.country, item: new URL(`/country/${spot.country_slug}`, siteUrl()).toString() }
+            : { '@type': 'ListItem', position: 2, name: spot.prefecture, item: new URL(`/area/${spot.prefecture_slug}`, siteUrl()).toString() },
+          { '@type': 'ListItem', position: 3, name: spot.category, item: new URL(`/category/${spot.category_slug}`, siteUrl()).toString() },
+          { '@type': 'ListItem', position: 4, name: spot.name, item: new URL(`/spots/${spot.slug}`, siteUrl()).toString() },
+        ],
+      },
+    ],
   };
 
   return (

@@ -17,25 +17,33 @@ export function buildMetadata(opts: {
   const url = new URL(path, base).toString();
   const title = opts.title ? `${opts.title}｜${SITE_NAME}` : SITE_NAME;
   const description = opts.description ?? SITE_DESCRIPTION;
+
+  // When `opts.ogImage` is not set, we DO NOT include the `images` key
+  // so that Next.js's opengraph-image.tsx file convention takes over.
+  const openGraph: Metadata['openGraph'] = {
+    title,
+    description,
+    url,
+    siteName: SITE_NAME,
+    type: 'website',
+    locale: 'ja_JP',
+  };
+  const twitter: Metadata['twitter'] = {
+    card: 'summary_large_image',
+    title,
+    description,
+  };
+  if (opts.ogImage) {
+    openGraph.images = [{ url: opts.ogImage }];
+    twitter.images = [opts.ogImage];
+  }
+
   return {
     title,
     description,
     alternates: { canonical: url },
     robots: opts.noindex ? { index: false, follow: false } : undefined,
-    openGraph: {
-      title,
-      description,
-      url,
-      siteName: SITE_NAME,
-      type: 'website',
-      images: opts.ogImage ? [{ url: opts.ogImage }] : undefined,
-      locale: 'ja_JP',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: opts.ogImage ? [opts.ogImage] : undefined,
-    },
+    openGraph,
+    twitter,
   };
 }

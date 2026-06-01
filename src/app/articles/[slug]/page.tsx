@@ -33,14 +33,26 @@ export default function ArticlePage({ params }: { params: Params }) {
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: a.title,
-    description: a.description,
-    datePublished: a.publishedAt,
-    dateModified: a.updatedAt ?? a.publishedAt,
-    url: new URL(`/articles/${a.slug}`, siteUrl()).toString(),
-    publisher: { '@type': 'Organization', name: SITE_NAME },
-    author: { '@type': 'Organization', name: SITE_NAME },
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: a.title,
+        description: a.description,
+        datePublished: a.publishedAt,
+        dateModified: a.updatedAt ?? a.publishedAt,
+        url: new URL(`/articles/${a.slug}`, siteUrl()).toString(),
+        publisher: { '@type': 'Organization', name: SITE_NAME },
+        author: { '@type': 'Organization', name: SITE_NAME },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'ホーム', item: siteUrl() },
+          { '@type': 'ListItem', position: 2, name: '記事', item: new URL('/articles', siteUrl()).toString() },
+          { '@type': 'ListItem', position: 3, name: a.title, item: new URL(`/articles/${a.slug}`, siteUrl()).toString() },
+        ],
+      },
+    ],
   };
 
   const related = (a.related ?? [])

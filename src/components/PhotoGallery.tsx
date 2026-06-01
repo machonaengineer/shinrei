@@ -1,13 +1,14 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Database } from '@/types/database';
 
-type Image = Database['public']['Tables']['spot_images']['Row'];
+type SpotImage = Database['public']['Tables']['spot_images']['Row'];
 
 export function PhotoGallery({
   images,
   spotSlug,
 }: {
-  images: Image[];
+  images: SpotImage[];
   spotSlug: string;
 }) {
   if (!images.length) {
@@ -27,13 +28,16 @@ export function PhotoGallery({
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
       {images.map((img) => (
         <figure key={img.id} className="surface-card overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={img.image_url}
-            alt={img.caption ?? '投稿写真'}
-            loading="lazy"
-            className="aspect-square w-full object-cover"
-          />
+          <div className="relative aspect-square w-full bg-bg-soft">
+            <Image
+              src={img.image_url}
+              alt={img.caption ?? '投稿写真'}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 250px"
+              className="object-cover"
+              unoptimized={false}
+            />
+          </div>
           <figcaption className="px-2 py-1 text-[11px] text-ink-muted leading-tight">
             {img.caption && <div className="text-ink-dim line-clamp-2">{img.caption}</div>}
             <div className="flex items-center justify-between mt-0.5">

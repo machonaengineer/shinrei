@@ -3,6 +3,7 @@ import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SiteAnalytics } from '@/components/Analytics';
+import { JsonLd, websiteJsonLd, organizationJsonLd } from '@/components/JsonLd';
 import { SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants';
 import { siteUrl } from '@/lib/seo';
 
@@ -56,6 +57,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-screen flex flex-col bg-bg text-ink">
+        <JsonLd data={websiteJsonLd()} />
+        <JsonLd data={organizationJsonLd()} />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

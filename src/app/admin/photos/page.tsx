@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { supabaseAdmin } from '@/lib/supabase';
 import { AdminStatusBadge } from '@/components/AdminStatusBadge';
 import { AdminTable } from '@/components/AdminTable';
@@ -59,8 +60,9 @@ export default async function AdminPhotosPage({
             key: 'preview',
             header: '画像',
             render: (r) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={r.image_url} alt="" className="h-16 w-16 object-cover rounded" />
+              <div className="relative h-16 w-16 rounded overflow-hidden bg-bg-soft">
+                <Image src={r.image_url} alt="" fill sizes="64px" className="object-cover" />
+              </div>
             ),
           },
           {

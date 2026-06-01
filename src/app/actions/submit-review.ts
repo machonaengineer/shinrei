@@ -3,7 +3,8 @@
 import { z } from 'zod';
 import { headers } from 'next/headers';
 import { supabaseAdmin } from '@/lib/supabase';
-import { hashIp, safeBoolean, safeNumber, safeString } from '@/lib/utils';
+import { safeBoolean, safeNumber, safeString } from '@/lib/utils';
+import { hashIp } from '@/lib/server-utils';
 
 const schema = z.object({
   spotSlug: z.string().min(1),
