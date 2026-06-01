@@ -6,6 +6,7 @@ import { CategoryBadge } from './CategoryBadge';
 import { ScaryScore } from './ScaryScore';
 import { truncate } from '@/lib/utils';
 import { trackEvent, Events } from '@/lib/analytics';
+import { FavoriteHeart } from './FavoriteButton';
 
 type SpotCardSpot = Pick<
   Spot,
@@ -65,6 +66,7 @@ export function SpotCard({ spot }: { spot: SpotCardSpot }) {
         )}
       </Link>
       <div className="mt-3 pt-3 border-t border-bg-border flex items-center gap-2 text-[11px]">
+        <FavoriteHeart spot={spot} />
         <a
           href={youtubeUrl}
           target="_blank"

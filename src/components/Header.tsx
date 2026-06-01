@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SITE_NAME } from '@/lib/constants';
+import { FavoritesNavLink } from './FavoritesNavLink';
 
 export function Header() {
   return (
@@ -15,7 +16,7 @@ export function Header() {
           <Link href="/world" className="hover:text-ink">世界</Link>
           <Link href="/yokai" className="hover:text-ink">妖怪</Link>
           <Link href="/articles" className="hover:text-ink">記事</Link>
-          <Link href="/about" className="hover:text-ink">About</Link>
+          <FavoritesNavLink className="hover:text-ink inline-flex items-center" />
           <Link href="/en" className="text-ink-muted hover:text-ink border border-bg-border rounded px-2 py-0.5 text-xs">EN</Link>
           <Link
             href="/submit/spot"

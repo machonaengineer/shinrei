@@ -12,6 +12,7 @@ import { PhotoGallery } from '@/components/PhotoGallery';
 import { VideoEmbed, VideoSearchLinks } from '@/components/VideoEmbed';
 import { VideoSubmitForm } from '@/components/VideoSubmitForm';
 import { ShareButtons } from '@/components/ShareButtons';
+import { FavoriteControls } from '@/components/FavoriteButton';
 import { SpotCard } from '@/components/SpotCard';
 import { buildMetadata, siteUrl } from '@/lib/seo';
 import { decodeSlug } from '@/lib/utils';
@@ -207,6 +208,22 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
           <ScaryScore value={spot.scary_score} size="md" />
           <span className="text-sm text-ink-dim">口コミ {spot.review_count}件</span>
           <span className="text-sm text-ink-dim">危険度 {spot.danger_level}/5</span>
+        </div>
+        <div className="pt-1">
+          <FavoriteControls
+            spot={{
+              slug: spot.slug,
+              name: spot.name,
+              prefecture: spot.prefecture,
+              city: spot.city,
+              category_slug: spot.category_slug,
+              description: spot.description,
+              scary_score: spot.scary_score,
+              review_count: spot.review_count,
+              is_entry_prohibited: spot.is_entry_prohibited,
+              is_private_property: spot.is_private_property,
+            }}
+          />
         </div>
       </header>
 

@@ -17,6 +17,7 @@ export function Footer() {
               <li><Link href="/world" className="hover:text-ink">世界の心霊スポット</Link></li>
               <li><Link href="/yokai" className="hover:text-ink">妖怪図鑑</Link></li>
               <li><Link href="/articles" className="hover:text-ink">怪談・民俗ガイド</Link></li>
+              <li><Link href="/favorites" className="hover:text-ink">お気に入り・訪問チェック</Link></li>
               <li><Link href="/submit/spot" className="hover:text-ink">スポットを投稿する</Link></li>
               <li><Link href="/report" className="hover:text-ink">投稿を通報する</Link></li>
               <li><Link href="/removal-request" className="hover:text-ink">削除依頼を送る</Link></li>
