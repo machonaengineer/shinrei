@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "import:spots": "tsx scripts/import-spots.ts"
+    "import:spots": "tsx scripts/import-spots.ts",
+    "import:youtube": "tsx scripts/import-youtube.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

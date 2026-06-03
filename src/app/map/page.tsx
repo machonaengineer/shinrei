@@ -17,8 +17,9 @@ type FlaggedPin = SpotPin & { has_image: boolean; has_video: boolean };
 const PAGE_SIZE = 1000;
 const MAX_PAGES = 10; // 最大 10,000 件まで対応
 
-export default async function MapPage() {
+export default async function MapPage({ searchParams }: { searchParams: { near?: string } }) {
   const supabase = supabaseServer();
+  const initialNear = searchParams?.near === '1';
 
   // チャンク取得（Supabase のデフォルト max-rows=1000 を range で回避）
   const baseSpots: SpotPin[] = [];
@@ -69,7 +70,7 @@ export default async function MapPage() {
           全 <strong className="text-ink">{spots.length.toLocaleString()}</strong> 件のスポット。ピンをクリックするとスポット概要を表示します。
         </p>
       </header>
-      <MapClient spots={spots} />
+      <MapClient spots={spots} initialNear={initialNear} />
     </div>
   );
 }
