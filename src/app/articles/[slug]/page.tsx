@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { ARTICLES, ARTICLE_BY_SLUG, ARTICLE_CATEGORIES } from '@/content/articles';
 import { ArticleRenderer } from '@/components/ArticleRenderer';
 import { AdSlot } from '@/components/AdSlot';
+import { AffiliateLinks } from '@/components/AffiliateLinks';
 import { DisclaimerBox } from '@/components/DisclaimerBox';
 import { buildMetadata, siteUrl } from '@/lib/seo';
 import { SITE_NAME } from '@/lib/constants';
@@ -92,6 +93,8 @@ export default function ArticlePage({ params }: { params: Params }) {
       <ArticleRenderer sections={a.sections} />
 
       <AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE} format="auto" />
+
+      <AffiliateLinks />
 
       {related.length > 0 && (
         <section className="mt-10">

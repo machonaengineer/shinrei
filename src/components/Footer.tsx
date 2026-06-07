@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants';
+import { NewsletterSignup } from './NewsletterSignup';
 
 export function Footer() {
   return (
@@ -42,8 +43,14 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-8 pt-4 border-t border-bg-border text-xs text-ink-muted">
-          © {new Date().getFullYear()} {SITE_NAME}. 掲載情報はユーザー投稿に基づきます。真偽を保証するものではありません。
+        <div className="mt-8 pt-4 border-t border-bg-border space-y-4">
+          <div className="max-w-md">
+            <div className="text-ink-dim text-xs mb-2">📨 月1のニュースレター</div>
+            <NewsletterSignup compact />
+          </div>
+          <div className="text-xs text-ink-muted">
+            © {new Date().getFullYear()} {SITE_NAME}. 掲載情報はユーザー投稿に基づきます。真偽を保証するものではありません。
+          </div>
         </div>
       </div>
     </footer>

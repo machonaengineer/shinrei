@@ -5,6 +5,7 @@ import { supabaseServer } from '@/lib/supabase';
 import { SpotCard } from '@/components/SpotCard';
 import { DisclaimerBox } from '@/components/DisclaimerBox';
 import { ShareButtons } from '@/components/ShareButtons';
+import { AdSlot } from '@/components/AdSlot';
 import { CATEGORIES, CATEGORY_BY_SLUG, PREFECTURES, PREFECTURE_BY_SLUG } from '@/lib/constants';
 import { buildMetadata, siteUrl } from '@/lib/seo';
 
@@ -173,6 +174,8 @@ export default async function CategoryPage({
           </ul>
         </section>
       )}
+
+      <AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_CATEGORY} format="auto" />
 
       <section>
         <h2 className="text-lg font-semibold text-ink mb-2">怖さランキング</h2>

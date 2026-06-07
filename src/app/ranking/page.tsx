@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { supabaseServer } from '@/lib/supabase';
 import { DisclaimerBox } from '@/components/DisclaimerBox';
 import { ShareButtons } from '@/components/ShareButtons';
+import { AdSlot } from '@/components/AdSlot';
 import { RankingList, type RankingSpot } from '@/components/RankingList';
 import { buildMetadata, siteUrl } from '@/lib/seo';
 import { CATEGORIES } from '@/lib/constants';
@@ -90,6 +91,9 @@ export default async function RankingPage() {
       </section>
 
       <RankingList title="🔥 怖さスコア TOP12（全国・海外）" spots={(topScary.data ?? []) as RankingSpot[]} />
+
+      <AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_RANKING} format="auto" />
+
       <RankingList title="💬 口コミ数 TOP12" spots={(topReview.data ?? []) as RankingSpot[]} />
       <RankingList title="🇯🇵 国内 怖さ TOP12" spots={(japanScary.data ?? []) as RankingSpot[]} />
       <RankingList title="🌐 海外 怖さ TOP12" spots={(worldScary.data ?? []) as RankingSpot[]} />

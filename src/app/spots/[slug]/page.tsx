@@ -14,6 +14,7 @@ import { VideoSubmitForm } from '@/components/VideoSubmitForm';
 import { ShareButtons } from '@/components/ShareButtons';
 import { FavoriteControls } from '@/components/FavoriteButton';
 import { SpotCard } from '@/components/SpotCard';
+import { AdSlot } from '@/components/AdSlot';
 import { buildMetadata, siteUrl } from '@/lib/seo';
 import { decodeSlug } from '@/lib/utils';
 import { SITE_NAME, COUNTRY_BY_SLUG, PREFECTURE_BY_SLUG, CATEGORY_BY_SLUG } from '@/lib/constants';
@@ -312,6 +313,8 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
 
       <DisclaimerBox />
 
+      <AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_SPOT_TOP} format="auto" />
+
       {/* 関連スポット（内部リンク強化） */}
       {relatedByPref.length > 0 && (
         <section className="space-y-3">
@@ -348,6 +351,8 @@ export default async function SpotDetailPage({ params }: { params: Params }) {
           </ul>
         </section>
       )}
+
+      <AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_SPOT_BOTTOM} format="auto" />
 
       {/* シェア */}
       <section className="surface-soft p-4 space-y-2">

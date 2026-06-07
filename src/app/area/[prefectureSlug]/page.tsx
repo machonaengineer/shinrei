@@ -6,6 +6,7 @@ import { SpotCard } from '@/components/SpotCard';
 import { MapViewDynamic } from '@/components/MapViewDynamic';
 import { DisclaimerBox } from '@/components/DisclaimerBox';
 import { ShareButtons } from '@/components/ShareButtons';
+import { AdSlot } from '@/components/AdSlot';
 import { PREFECTURE_BY_SLUG, PREFECTURES, CATEGORIES, CATEGORY_BY_SLUG } from '@/lib/constants';
 import { buildMetadata, siteUrl } from '@/lib/seo';
 import type { SpotPin } from '@/types/spot';
@@ -180,6 +181,8 @@ export default async function AreaPage({ params }: { params: Params }) {
           <Link href="/submit/spot" className="btn-primary text-sm">地元の噂を投稿する</Link>
         </div>
       </section>
+
+      <AdSlot slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_AREA} format="auto" />
 
       {popularSpots.length > 0 && (
         <section>

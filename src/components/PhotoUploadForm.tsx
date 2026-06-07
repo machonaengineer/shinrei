@@ -21,7 +21,9 @@ export function PhotoUploadForm({ spotSlug }: { spotSlug: string }) {
   if (result?.ok) {
     return (
       <div className="surface-card p-6 text-center">
-        <h2 className="text-ink font-semibold">写真を受け付けました</h2>
+        <h2 className="text-ink font-semibold">
+          写真 {result.count} 枚を受け付けました
+        </h2>
         <p className="mt-2 text-ink-dim text-sm">管理者の承認後に公開されます。</p>
       </div>
     );
@@ -42,16 +44,17 @@ export function PhotoUploadForm({ spotSlug }: { spotSlug: string }) {
       </div>
 
       <div>
-        <label htmlFor="photo" className="label">画像ファイル<span className="required-mark">*</span></label>
+        <label htmlFor="photos" className="label">画像ファイル（最大5枚）<span className="required-mark">*</span></label>
         <input
-          id="photo"
-          name="photo"
+          id="photos"
+          name="photos"
           type="file"
           accept="image/jpeg,image/png,image/webp"
+          multiple
           required
           className="input file:mr-3 file:rounded file:border-0 file:bg-accent file:text-white file:px-3 file:py-1"
         />
-        <p className="mt-1 text-xs text-ink-muted">jpg / png / webp、10MB以下</p>
+        <p className="mt-1 text-xs text-ink-muted">jpg / png / webp、各 10MB 以下、最大 5 枚</p>
       </div>
 
       <div>
