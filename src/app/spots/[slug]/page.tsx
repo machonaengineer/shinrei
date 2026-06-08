@@ -17,6 +17,7 @@ import { SpotCard } from '@/components/SpotCard';
 import { AdSlot } from '@/components/AdSlot';
 import { buildMetadata, siteUrl } from '@/lib/seo';
 import { decodeSlug } from '@/lib/utils';
+import { isIndexWorthySpot } from '@/lib/spot-quality';
 import { SITE_NAME, COUNTRY_BY_SLUG, PREFECTURE_BY_SLUG, CATEGORY_BY_SLUG } from '@/lib/constants';
 import type { SpotPin } from '@/types/spot';
 
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const slug = decodeSlug(params.slug);
   const { data } = await supabase
     .from('spots')
-    .select('name, description, country, prefecture, category, slug, status')
+    .select('id, name, description, country, prefecture, category, slug, status')
     .eq('slug', slug)
     .single();
 
@@ -39,10 +40,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const where = data.country && data.country !== '日本' ? `${data.country} ${data.prefecture}` : data.prefecture;
   const title = `${data.name}｜${where}の心霊スポット`;
   const description = `${data.name}は${where}にある心霊・怪談スポットです。噂や口コミ、写真、動画、周辺スポットを確認できます。無断侵入や迷惑行為は行わず、安全に閲覧してください。`;
+  // Thin imported spots (no UGC) are noindex'd to avoid scaled-content penalties.
+  const indexWorthy = await isIndexWorthySpot(data.id);
   return buildMetadata({
     title,
     description,
     path: `/spots/${data.slug}`,
+    noindex: !indexWorthy,
   });
 }
 

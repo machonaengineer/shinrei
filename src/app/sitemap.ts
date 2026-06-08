@@ -9,21 +9,34 @@ export const revalidate = 3600;
 
 const SPOTS_PER_SITEMAP = 2000;
 
+/**
+ * Count only index-worthy spots. Prefer the `index_worthy_spots` view
+ * (created by supabase/adsense_quality_view.sql); fall back to all
+ * published spots if the view doesn't exist yet.
+ */
+async function countIndexWorthy(): Promise<number> {
+  const supabase = supabaseServer();
+  // try the quality view first
+  const viewRes = await supabase
+    .from('index_worthy_spots' as never)
+    .select('id', { count: 'exact', head: true });
+  if (!viewRes.error) return viewRes.count ?? 0;
+  // fallback: all published
+  const { count } = await supabase
+    .from('spots')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'published');
+  return count ?? 0;
+}
+
 export async function generateSitemaps() {
-  // we publish: index 0 = static pages + taxonomy + articles + yokai
-  //              index 1..N = spots in chunks of 2000
-  let spotPages = 0;
+  let spotPages = 1;
   try {
-    const supabase = supabaseServer();
-    const { count } = await supabase
-      .from('spots')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'published');
-    spotPages = Math.max(1, Math.ceil((count ?? 0) / SPOTS_PER_SITEMAP));
+    const total = await countIndexWorthy();
+    spotPages = Math.max(1, Math.ceil(total / SPOTS_PER_SITEMAP));
   } catch {
     spotPages = 1;
   }
-  // 0 = main, 1..spotPages = spot chunks
   return Array.from({ length: 1 + spotPages }, (_, id) => ({ id }));
 }
 
@@ -101,20 +114,30 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
     return [...staticUrls, ...yokaiUrls, ...articleUrls, ...countryUrls, ...prefUrls, ...catUrls];
   }
 
-  // id >= 1 — spot chunk
+  // id >= 1 — spot chunk (index-worthy only)
   const chunkIndex = id - 1;
   const from = chunkIndex * SPOTS_PER_SITEMAP;
   const to = from + SPOTS_PER_SITEMAP - 1;
 
   try {
     const supabase = supabaseServer();
-    const { data } = await supabase
-      .from('spots')
+    // prefer the quality view
+    const viewRes = await supabase
+      .from('index_worthy_spots' as never)
       .select('slug, updated_at')
-      .eq('status', 'published')
-      .order('id', { ascending: true })
+      .order('slug', { ascending: true })
       .range(from, to);
-    return (data ?? []).map((s) => ({
+    const rows = (viewRes.error
+      ? (
+          await supabase
+            .from('spots')
+            .select('slug, updated_at')
+            .eq('status', 'published')
+            .order('id', { ascending: true })
+            .range(from, to)
+        ).data
+      : viewRes.data) as Array<{ slug: string; updated_at: string }> | null;
+    return (rows ?? []).map((s) => ({
       url: `${base}/spots/${encodeURIComponent(s.slug)}`,
       lastModified: new Date(s.updated_at),
       changeFrequency: 'weekly',
