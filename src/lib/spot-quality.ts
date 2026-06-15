@@ -38,3 +38,82 @@ export async function isIndexWorthySpot(spotId: string): Promise<boolean> {
   // imported => only if it now has user-generated value
   return hasUgc || !isImported;
 }
+
+export type IndexWorthyRow = { slug: string; updated_at: string };
+
+/**
+ * Bulk version for the sitemap. Computes the set of index-worthy spots
+ * entirely with the anon client — NO database view required, so the
+ * operator does not have to run any SQL.
+ *
+ * Strategy: pull the id-bearing rows from the small tables (UGC +
+ * imported sources) to build sets, then stream published spots in
+ * chunks and keep the ones that qualify.
+ */
+export async function getIndexWorthySpots(): Promise<IndexWorthyRow[]> {
+  const supabase = supabaseServer();
+  const PAGE = 1000;
+
+  async function collectSpotIds(
+    table: 'reviews' | 'spot_images' | 'spot_videos',
+  ): Promise<Set<string>> {
+    const set = new Set<string>();
+    for (let page = 0; page < 50; page++) {
+      const { data, error } = await supabase
+        .from(table)
+        .select('spot_id')
+        .eq('status', 'published')
+        .range(page * PAGE, page * PAGE + PAGE - 1);
+      if (error || !data || data.length === 0) break;
+      for (const r of data as { spot_id: string | null }[]) {
+        if (r.spot_id) set.add(r.spot_id);
+      }
+      if (data.length < PAGE) break;
+    }
+    return set;
+  }
+
+  async function collectImportedIds(): Promise<Set<string>> {
+    const set = new Set<string>();
+    for (let page = 0; page < 50; page++) {
+      const { data, error } = await supabase
+        .from('sources')
+        .select('spot_id')
+        .in('source_type', ['wikipedia', 'community-site'])
+        .range(page * PAGE, page * PAGE + PAGE - 1);
+      if (error || !data || data.length === 0) break;
+      for (const r of data as { spot_id: string | null }[]) {
+        if (r.spot_id) set.add(r.spot_id);
+      }
+      if (data.length < PAGE) break;
+    }
+    return set;
+  }
+
+  const [reviewIds, imageIds, videoIds, importedIds] = await Promise.all([
+    collectSpotIds('reviews'),
+    collectSpotIds('spot_images'),
+    collectSpotIds('spot_videos'),
+    collectImportedIds(),
+  ]);
+
+  const hasUgc = (id: string) =>
+    reviewIds.has(id) || imageIds.has(id) || videoIds.has(id);
+
+  const out: IndexWorthyRow[] = [];
+  for (let page = 0; page < 50; page++) {
+    const { data, error } = await supabase
+      .from('spots')
+      .select('id, slug, updated_at')
+      .eq('status', 'published')
+      .order('id', { ascending: true })
+      .range(page * PAGE, page * PAGE + PAGE - 1);
+    if (error || !data || data.length === 0) break;
+    for (const s of data as { id: string; slug: string; updated_at: string }[]) {
+      const indexWorthy = !importedIds.has(s.id) || hasUgc(s.id);
+      if (indexWorthy) out.push({ slug: s.slug, updated_at: s.updated_at });
+    }
+    if (data.length < PAGE) break;
+  }
+  return out;
+}
