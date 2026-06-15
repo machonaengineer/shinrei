@@ -10,8 +10,10 @@ export function ShareButtons({ title, url }: { title: string; url: string }) {
   const xUrl = `https://x.com/intent/tweet?text=${enc(title)}&url=${enc(url)}`;
   const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`;
   const lineUrl = `https://line.me/R/share?text=${enc(title + ' ' + url)}`;
+  // Hatena Bookmark — uses entry/<url-without-scheme>
+  const hatenaUrl = `https://b.hatena.ne.jp/entry/${url.replace(/^https?:\/\//, 's/')}`;
 
-  function onShare(channel: 'x' | 'facebook' | 'line') {
+  function onShare(channel: 'x' | 'facebook' | 'line' | 'hatena') {
     trackEvent(Events.ShareClick, { channel, url });
   }
 
@@ -54,6 +56,16 @@ export function ShareButtons({ title, url }: { title: string; url: string }) {
         className="inline-flex items-center gap-1 rounded border border-bg-border bg-bg-card px-2.5 py-1 text-ink-dim hover:text-ink hover:border-accent"
       >
         LINE
+      </a>
+      <a
+        href={hatenaUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => onShare('hatena')}
+        className="inline-flex items-center gap-1 rounded border border-bg-border bg-bg-card px-2.5 py-1 text-ink-dim hover:text-ink hover:border-accent"
+        title="はてなブックマークに追加"
+      >
+        🔖 はてブ
       </a>
       <button
         type="button"

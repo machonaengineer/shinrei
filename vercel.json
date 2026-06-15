@@ -5,6 +5,12 @@
   "installCommand": "npm install",
   "devCommand": "npm run dev",
   "regions": ["hnd1"],
+  "crons": [
+    {
+      "path": "/api/cron/x-post",
+      "schedule": "0 0 * * 1"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
